@@ -6,62 +6,95 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include "chat.pb-c.h"
 
-#define PORT 8080
-#define MAX_CLIENTS 100
+#define PORT 9001
 #define BUFFER_SIZE 1024
+#define MAX_CLIENTS 100
 
 typedef struct {
-    int socket_fd;
-    struct sockaddr_in addr;
-} ClientInfo;
+    int sockfd;
+    char username[64];
+    int status;
+} Client;
 
+Client clients[MAX_CLIENTS];
 int client_count = 0;
-ClientInfo clients[MAX_CLIENTS];
 
-void *client_handler(void *arg) {
-    ClientInfo *client = (ClientInfo *)arg;
-    int socket_fd = client->socket_fd;
+void broadcast_message(Chat__Message *message) {
+    for (int i = 0; i < client_count; i++) {
+        if (clients[i].status != 3 && strcmp(clients[i].username, message->message_sender) != 0) {
+            Chat__Answer answer = CHAT__ANSWER__INIT;
+            answer.op = 5;
+            answer.response_status_code = 200;
+            answer.message = message;
+
+            uint8_t buffer[BUFFER_SIZE];
+            size_t message_len = chat__answer__get_packed_size(&answer);
+            chat__answer__pack(&answer, buffer);
+
+            send(clients[i].sockfd, buffer, message_len, 0);
+        }
+    }
+}
+
+void *handle_client(void *arg) {
+    Client *client = (Client *)arg;
+    int sockfd = client->sockfd;
+    uint8_t buffer[BUFFER_SIZE];
 
     while (1) {
-        uint8_t recv_buffer[BUFFER_SIZE];
-        ssize_t bytes_received = recv(socket_fd, recv_buffer, sizeof(recv_buffer), 0);
-        if (bytes_received <= 0) {
+        ssize_t len = recv(sockfd, buffer, BUFFER_SIZE, 0);
+
+        if (len <= 0) {
+            // Client disconnected
+            client->status = 3;
             break;
         }
 
-
-        for (int i = 0; i < client_count; i++) {
-            if (clients[i].socket_fd != socket_fd) {
-                send(clients[i].socket_fd, recv_buffer, bytes_received, 0);
-            }
+        Chat__UserOption *user_option = chat__user_option__unpack(NULL, len, buffer);
+        if (user_option == NULL) {
+            continue;
         }
 
+        if (user_option->op == 5 && user_option->message != NULL) {
+            // Forward the message to other clients
+            broadcast_message(user_option->message);
+        }
+
+        chat__user_option__free_unpacked(user_option, NULL);
     }
 
-    close(socket_fd);
-
+    close(sockfd);
     return NULL;
 }
 
-int main() {
-    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_fd == -1) {
+int main(int argc, char const *argv[]) {
+    int server_fd, new_socket;
+    struct sockaddr_in address;
+    int opt = 1;
+    int addrlen = sizeof(address);
+
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
         perror("socket");
         exit(EXIT_FAILURE);
     }
 
-    struct sockaddr_in server_addr;
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(PORT);
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) {
+        perror("setsockopt");
+        exit(EXIT_FAILURE);
+    }
 
-    if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
+
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
         perror("bind");
         exit(EXIT_FAILURE);
     }
 
-    if (listen(server_fd, 3) < 0) {
+    if (listen(server_fd, 10) < 0) {
         perror("listen");
         exit(EXIT_FAILURE);
     }
@@ -69,25 +102,26 @@ int main() {
     printf("Server listening on port %d\n", PORT);
 
     while (1) {
-        ClientInfo new_client;
-        socklen_t addr_len = sizeof(new_client.addr);
-
-        new_client.socket_fd = accept(server_fd, (struct sockaddr *)&new_client.addr, &addr_len);
-        if (new_client.socket_fd < 0) {
+        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0) {
             perror("accept");
-            continue;
+            exit(EXIT_FAILURE);
         }
 
-        printf("New client connected: %s\n", inet_ntoa(new_client.addr.sin_addr));
+        if (client_count < MAX_CLIENTS) {
+            Client *client = &clients[client_count++];
+            client->sockfd = new_socket;
+            client->status = 1;
 
-        clients[client_count++] = new_client;
+            pthread_t client_thread;
+            pthread_create(&client_thread, NULL, handle_client, (void *)client);
+            pthread_detach(client_thread);
 
-        pthread_t thread_id;
-        pthread_create(&thread_id, NULL, client_handler, (void *)&clients[client_count - 1]);
-        pthread_detach(thread_id);
+            printf("New client connected (fd: %d)\n", new_socket);
+        } else {
+            close(new_socket);
+            printf("Client limit reached. Connection refused.\n");
+        }
     }
-
-    close(server_fd);
 
     return 0;
 }
