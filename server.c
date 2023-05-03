@@ -153,7 +153,7 @@ void * handle_client(void * arg) {
     addUser(chat_registration -> username, chat_registration -> ip, client_socket, 1);
 
     server_response_registro.op = 0;
-    server_response_registro.response_status_code = 400;
+    server_response_registro.response_status_code = 200;
     server_response_registro.response_message = "SUCCESSFULLY REGISTERED";
     // server_response.message = &response;
 
@@ -242,7 +242,7 @@ void * handle_client(void * arg) {
 
         ChatSistOS__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
         server_response.op = 1;
-        server_response.response_status_code = 400;
+        server_response.response_status_code = 200;
         server_response.message = received_message;
 
         // Serializar la respuesta en un buffer
@@ -289,7 +289,7 @@ void * handle_client(void * arg) {
         // Si el usuario se encuentra
         ChatSistOS__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
         server_response.op = 2;
-        server_response.response_status_code = 400;
+        server_response.response_status_code = 200;
         server_response.message = received_message_directo;
 
         // Serializar la respuesta en un buffer
@@ -348,7 +348,7 @@ void * handle_client(void * arg) {
 
           ChatSistOS__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
           server_response.op = 3;
-          server_response.response_status_code = 400;
+          server_response.response_status_code = 200;
           server_response.response_message = "\nSTATUS CHANGED ON-PREMISE";
         }
       }
@@ -388,7 +388,7 @@ void * handle_client(void * arg) {
       // Answer del servidor
       ChatSistOS__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
       server_response.op = 4;
-      server_response.response_status_code = 400;
+      server_response.response_status_code = 200;
       server_response.response_message = "USERS CURRENTLY CONNECTED:";
       server_response.users_online = & connected_clients;
 
@@ -444,7 +444,7 @@ void * handle_client(void * arg) {
       ChatSistOS__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
       server_response.op = 5;
       if (user_found == 1) {
-        server_response.response_status_code = 400;
+        server_response.response_status_code = 200;
       } else {
         server_response.response_status_code = 200;
       }

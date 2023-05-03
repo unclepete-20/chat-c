@@ -17,24 +17,24 @@
 int sock = 0;
 
 void menuMessage(){
-    printf("MENU");
-    printf("Tiene las siguientes opciones:");
-    printf("1. Enviar mensaje de todos los usuarios");
-    printf("2. Enviar mensaje directo");
-    printf("3. Cambiar Status");
-    printf("4. Listar usuarios conectados");
-    printf("5. Desplegar info de un usuario");
-    printf("6. Ayuda");
-    printf("7. Salir del Chat");
+    printf("MENU\n");
+    printf("Tiene las siguientes opciones:\n");
+    printf("1. Enviar mensaje de todos los usuarios\n");
+    printf("2. Enviar mensaje directo\n");
+    printf("3. Cambiar Status\n");
+    printf("4. Listar usuarios conectados\n");
+    printf("5. Desplegar info de un usuario\n");
+    printf("6. Ayuda\n");
+    printf("7. Salir del Chat\n");
 }
 
 void helpMessage(){
-    printf("Para enviar mensajes puedes utilizar las opciones 1 y 2");
-    printf("Para las dos opciones debes escribir el mensaje que desees enviar");
-    printf("Para la opcion 2 debes de indicar el nombre de usuario al que deseas\nenviar el mensaje.");
-    printf("Puedes cambiar tu status dentro del chat con la opcion 3");
-    printf("Puedes ver la lista de los usuarios con las opciones 4 y 5");
-    printf("Para salir del chat puedes utilizar la opcion 7");
+    printf("Para enviar mensajes puedes utilizar las opciones 1 y 2\n");
+    printf("Para las dos opciones debes escribir el mensaje que desees enviar\n");
+    printf("Para la opcion 2 debes de indicar el nombre de usuario al que deseas\nenviar el mensaje.\n");
+    printf("Puedes cambiar tu status dentro del chat con la opcion 3\n");
+    printf("Puedes ver la lista de los usuarios con las opciones 4 y 5\n");
+    printf("Para salir del chat puedes utilizar la opcion 7\n");
 }
 
 char* userStatus(int status_value){
@@ -55,13 +55,6 @@ char* userStatus(int status_value){
 
     return response;
 }
-
-// char* getUserIP(){
-//     struct ifaddrs *ifaddr, *ifa;
-//     char* user_ip = NULL;
-
-//     if(getifaddrs(&ifaddr) == -1);
-// }
 
 void* serverResponse(void* args){
     int socket = *(int*) args;
@@ -87,25 +80,25 @@ void* serverResponse(void* args){
 
         switch (option){
             case 1:
-                if(server_response -> response_status_code == 400){
+                if(server_response -> response_status_code == 200){
                     ChatSistOS__Message *message_received = server_response -> message;
                     printf("\n Message from: %s to: %s: %s", message_received -> message_sender, "ALL", message_received -> message_content);
                 }
                 break;
             case 2:
-                if(server_response -> response_status_code == 400){
+                if(server_response -> response_status_code == 200){
                     ChatSistOS__Message *message_received = server_response -> message;
                     printf("\n Message from: %s to: %s: %s", message_received -> message_sender, "ALL", message_received -> message_content);
                 }
                 break;
             case 3:
-                if(server_response -> response_status_code == 400){
+                if(server_response -> response_status_code == 200){
                     ChatSistOS__Message *message_received = server_response -> message;
                     printf("\n Message from: %s to: %s: %s", message_received -> message_sender, "ALL", message_received -> message_content);
                 }
                 break;
             case 4:
-                if(server_response -> response_status_code == 400){
+                if(server_response -> response_status_code == 200){
                     ChatSistOS__Message *message_received = server_response -> message;
                     printf("\n Message from: %s to: %s: %s", message_received -> message_sender, "ALL", message_received -> message_content);
                 }
@@ -144,7 +137,7 @@ int main(int argc, char *argv[]) {
 
     char* username = argv[1];
     char* ip_server = argv[2];
-    int* port_server = atoi(argv[3]);
+    int port_server = atoi(argv[3]);
     int user_option = 0;
 
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -166,11 +159,11 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    int user_socket = socket(AF_INET, SOCK_STREAM, 0);
+    // int user_socket = socket(AF_INET, SOCK_STREAM, 0);
 
     ChatSistOS__NewUser registration_user = CHAT_SIST_OS__NEW_USER__INIT;
     registration_user.username = username;
-    registration_user.ip = "HOLA";
+    registration_user.ip = "127.0.0.1";
 
     ChatSistOS__UserOption user_registered_option = CHAT_SIST_OS__USER_OPTION__INIT;
     user_registered_option.op = user_option;
@@ -180,7 +173,7 @@ int main(int argc, char *argv[]) {
     uint8_t *registration_buffer = malloc(serialized_registatrion);
     chat_sist_os__user_option__pack(&user_registered_option, registration_buffer);
 
-    if(send(user_socket, registration_buffer, serialized_registatrion, 0) < 0){
+    if(send(sock, registration_buffer, serialized_registatrion, 0) < 0){
         perror("MESSAGE ERROR");
         exit(1);
     }
@@ -188,7 +181,7 @@ int main(int argc, char *argv[]) {
     free(registration_buffer);
 
     uint8_t buffer_recv[BUFFER_SIZE];
-    ssize_t size_recv= recv(user_socket, buffer_recv, sizeof(buffer_recv), 0);
+    ssize_t size_recv= recv(sock, buffer_recv, sizeof(buffer_recv), 0);
     if(size_recv < 0){
         perror("NO RESPONSE RECEIVED");
         exit(1);
@@ -196,45 +189,22 @@ int main(int argc, char *argv[]) {
 
     ChatSistOS__Answer *answer = chat_sist_os__answer__unpack(NULL, size_recv, buffer_recv);
 
-    if(answer -> response_status_code == 400){
+    if(answer -> response_status_code == 200){
         printf("\n Message from: %s to: %s: %s", "Server", username, answer -> response_message);
     }
-    else{
-        printf("SE CAGO EN TODO");
+
+    chat_sist_os__answer__free_unpacked(answer, NULL);
+
+    pthread_t user_thread;
+    if(pthread_create(&user_thread, NULL, serverResponse, (void*)&sock) < 0){
+        perror("THREAD ERROR");
+        exit(1);
     }
 
-    // pthread_t receive_thread;
-    // pthread_create(&receive_thread, NULL, receive_messages, NULL);
-
-    // while (1) {
-    //     char input[MAX_INPUT_SIZE];
-    //     if (fgets(input, MAX_INPUT_SIZE, stdin) == NULL) {
-    //         break;
-    //     }
-
-    //     char recipient[64];
-    //     printf("Enter recipient: ");
-    //     fgets(recipient, 64, stdin);
-    //     recipient[strcspn(recipient, "\n")] = 0;
-
-    //     ChatSistOS__Message message = CHAT__MESSAGE__INIT;
-    //     message.message_private = 1;
-    //     message.message_destination = recipient;
-    //     message.message_content = input;
-    //     message.message_sender = username; // Replace this with the actual sender's username
-
-    //     ChatSistOS__UserOption user_option = CHAT__USER_OPTION__INIT;
-    //     user_option.op = 5;
-    //     user_option.message = &message;
-
-    //     uint8_t buffer[BUFFER_SIZE];
-    //     size_t message_len = chat__user_option__get_packed_size(&user_option);
-    //     chat__user_option__pack(&user_option, buffer);
-
-    //     send(sock, buffer, message_len, 0);
-    // }
-
-    // close(sock);
+    while(user_option != 7){
+        menuMessage();
+        scanf("%d", &user_option);
+    }
 
     return 0;
 }
