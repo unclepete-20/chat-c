@@ -446,7 +446,7 @@ void * handle_client(void * arg) {
       if (user_found == 1) {
         server_response.response_status_code = 200;
       } else {
-        server_response.response_status_code = 200;
+        server_response.response_status_code = 400;
       }
 
       server_response.response_message = "USERS CURRENTLY CONNECTED";
