@@ -140,8 +140,6 @@ void * handle_client(void * arg) {
 
     printf("\n >> |NEW USER CONNECTED| >>> NAME: %s  >>> IP: %s\n", chat_registration -> username, chat_registration -> ip);
 
-    printf("CODIGO");
-
     // Informacion del Cliente asociada al thread
     User MyInfo;
     strcpy(MyInfo.username, chat_registration -> username);
@@ -150,7 +148,7 @@ void * handle_client(void * arg) {
 
     // Answer server
     ChatSistOS__Answer server_response_registro = CHAT_SIST_OS__ANSWER__INIT;
-    if (userExists(MyInfo.username) == 0) {
+    if (MyInfo.username) {
         printf("SIJALA");
         // Agregar usuario conectado a la lista de usuarios
         addUser(chat_registration -> username, chat_registration -> ip, client_socket, 1);
@@ -174,7 +172,6 @@ void * handle_client(void * arg) {
         // Liberar los buffers y el mensaje
         free(server_buffer_registro);
     } else {
-        printf("NEL");
         server_response_registro.op = 0;
         server_response_registro.response_status_code = 200;
         server_response_registro.response_message = "USER ALREADY REGISTERED";
