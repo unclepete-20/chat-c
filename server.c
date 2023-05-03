@@ -122,7 +122,7 @@ void *handle_client(void *arg)
 {
     int client_socket = *(int *)arg;
     int client_in_session = 1;
-    /*
+    
     // Recibir el registro del cliente
     uint8_t recv_buffer[BUFFER_SIZE];
     ssize_t recv_size = recv(client_socket, recv_buffer, sizeof(recv_buffer), 0);
@@ -133,14 +133,14 @@ void *handle_client(void *arg)
     }
 
     // Deserializar el registro de NewUser
-    Chat__UserOption *usero_registration = chat_sist_os__user_option__unpack(NULL, recv_size, recv_buffer);
+    ChatSistOS__UserOption *usero_registration = chat_sist_os__user_option__unpack(NULL, recv_size, recv_buffer);
     if (usero_registration == NULL)
     {
         fprintf(stderr, "UNABLE TO UNPACK SENDER'S MESSAGE\n");
         exit(1);
     }
 
-    Chat__NewUser *chat_registration = usero_registration->createuser;
+    ChatSistOS__NewUser *chat_registration = usero_registration->createuser;
 
     printf("\n >> |NEW USER CONNECTED| >>> NAME: %s  >>> IP: %s\n", chat_registration->username, chat_registration->ip);
 
@@ -153,7 +153,7 @@ void *handle_client(void *arg)
 
 
     // Answer server
-    Chat__Answer server_response_registro = CHAT_SIST_OS__ANSWER__INIT;
+    ChatSistOS__Answer server_response_registro = CHAT_SIST_OS__ANSWER__INIT;
     if (userExists(MyInfo.username) == 0)
     {
         // Agregar usuario conectado a la lista de usuarios
@@ -223,7 +223,7 @@ void *handle_client(void *arg)
             goto exit_chat;
         }
         // Deserializar la opcion elegida del cliente
-        Chat__UserOption *client_option = chat_sist_os__user_option__unpack(NULL, recv_size_opcion, recv_buffer_opcion);
+        ChatSistOS__UserOption *client_option = chat_sist_os__user_option__unpack(NULL, recv_size_opcion, recv_buffer_opcion);
         if (client_option == NULL)
         {
             fprintf(stderr, "UNABLE TO UNPACK CONTENT\n");
@@ -238,7 +238,7 @@ void *handle_client(void *arg)
         {
         case 1:
             printf("\n\n");
-            Chat__Message *received_message = client_option->message;
+            ChatSistOS__Message *received_message = client_option->message;
             
             pthread_mutex_lock(&lock);
 
@@ -258,7 +258,7 @@ void *handle_client(void *arg)
 
             pthread_mutex_unlock(&lock);
 
-                Chat__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
+                ChatSistOS__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
                 server_response.op = 1;
                 server_response.response_status_code = 400;
                 server_response.message = received_message;
@@ -282,7 +282,7 @@ void *handle_client(void *arg)
         case 2:
 
             printf("\n\n");
-            Chat__Message *received_message_directo = client_option->message;
+            ChatSistOS__Message *received_message_directo = client_option->message;
 
             // Recorrer la lista de usuarios
             int enviar_mensaje = 0;
@@ -309,7 +309,7 @@ void *handle_client(void *arg)
             if (enviar_mensaje == 1)
             {
                 // Si el usuario se encuentra
-                Chat__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
+                ChatSistOS__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
                 server_response.op = 2;
                 server_response.response_status_code = 400;
                 server_response.message = received_message_directo;
@@ -333,7 +333,7 @@ void *handle_client(void *arg)
             {
 
                 // Si el usuario no se encuentra
-                Chat__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
+                ChatSistOS__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
                 server_response.op = 2;
                 server_response.response_status_code = 200;
                 server_response.response_message = "USER NOT FOUND...";
@@ -357,7 +357,7 @@ void *handle_client(void *arg)
             break;
         case 3:
                 printf("\n\n");
-                Chat__Status *status_verify = client_option->status;
+                ChatSistOS__Status *status_verify = client_option->status;
                 // Se recorre la lista de usuarios
 
                 pthread_mutex_lock(&lock);
@@ -372,7 +372,7 @@ void *handle_client(void *arg)
                         userList[i].last_active = time(NULL);
                         userList[i].status = status_verify->user_state;
 
-                        Chat__Answer server_response          = CHAT_SIST_OS__ANSWER__INIT;
+                        ChatSistOS__Answer server_response          = CHAT_SIST_OS__ANSWER__INIT;
                         server_response.op   =   3 ;
                         server_response.response_status_code = 400;
                         server_response.response_message = "\nSTATUS CHANGED ON-PREMISE";
@@ -386,9 +386,9 @@ void *handle_client(void *arg)
             printf("\n\n");
 
             //Usuarios online
-            Chat__UsersOnline connected_clients = CHAT_SIST_OS__USERS_ONLINE__INIT;
+            ChatSistOS__UsersOnline connected_clients = CHAT_SIST_OS__USERS_ONLINE__INIT;
             connected_clients.n_users = numUsers;
-            connected_clients.users   = malloc(sizeof(Chat__User *) * numUsers);
+            connected_clients.users   = malloc(sizeof(ChatSistOS__User *) * numUsers);
 
             pthread_mutex_lock(&lock);
 
@@ -401,7 +401,7 @@ void *handle_client(void *arg)
                     }
                     userList[i].last_active = time(NULL);
                 }
-                Chat__User *new_user = malloc(sizeof(Chat__User));
+                ChatSistOS__User *new_user = malloc(sizeof(ChatSistOS__User));
                 chat_sist_os__user__init(new_user);
                 new_user->user_name = userList[i].username;
                 new_user->user_state = userList[i].status;
@@ -413,7 +413,7 @@ void *handle_client(void *arg)
             pthread_mutex_unlock(&lock);
 
             // Answer del servidor
-            Chat__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
+            ChatSistOS__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
             server_response.op = 4;
             server_response.response_status_code = 400;
             server_response.response_message = "USERS CURRENTLY CONNECTED:";
@@ -437,9 +437,9 @@ void *handle_client(void *arg)
                 printf("\n\n");
                 int user_found = 0;
                 // Se muestran los usuarios disponibles en linea
-                Chat__UsersOnline connected_clients = CHAT_SIST_OS__USERS_ONLINE__INIT;
+                ChatSistOS__UsersOnline connected_clients = CHAT_SIST_OS__USERS_ONLINE__INIT;
                 connected_clients.n_users = numUsers;
-                connected_clients.users   = malloc(sizeof(Chat__User *) * numUsers);
+                connected_clients.users   = malloc(sizeof(ChatSistOS__User *) * numUsers);
                 
                 pthread_mutex_lock(&lock);
 
@@ -451,9 +451,9 @@ void *handle_client(void *arg)
                         }
                         userList[i].last_active = time(NULL);
                     }
-                    Chat__User *new_user = malloc(sizeof(Chat__User));
+                    ChatSistOS__User *new_user = malloc(sizeof(ChatSistOS__User));
                     chat_sist_os__user__init(new_user);
-                    Chat__User *empty = malloc(sizeof(Chat__User));
+                    ChatSistOS__User *empty = malloc(sizeof(ChatSistOS__User));
                     chat_sist_os__user__init(empty);
                     empty->user_name = "NULL";
                     new_user->user_name = userList[i].username;
@@ -471,7 +471,7 @@ void *handle_client(void *arg)
                 pthread_mutex_unlock(&lock);
 
                 // Respuesta recibida en el servidor
-                Chat__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
+                ChatSistOS__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
                 server_response.op = 5;
                 if (user_found == 1)
                 {
@@ -539,7 +539,7 @@ void *handle_client(void *arg)
         printf("\n");
     }
     close(client_socket);
-    */
+    
 }
 
 int main(int argc, char **argv)

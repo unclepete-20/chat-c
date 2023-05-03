@@ -81,32 +81,32 @@ void* serverResponse(void* args){
             exit(1);
         }
 
-        Chat__Answer *server_response = chat_sist_os__answer__unpack(NULL, size_recv, buffer_recv);
+        ChatSistOS__Answer *server_response = chat_sist_os__answer__unpack(NULL, size_recv, buffer_recv);
 
         int option = server_response -> op;
 
         switch (option){
             case 1:
                 if(server_response -> response_status_code == 400){
-                    Chat__Message *message_received = server_response -> message;
+                    ChatSistOS__Message *message_received = server_response -> message;
                     printf("\n Message from: %s to: %s: %s", message_received -> message_sender, "ALL", message_received -> message_content);
                 }
                 break;
             case 2:
                 if(server_response -> response_status_code == 400){
-                    Chat__Message *message_received = server_response -> message;
+                    ChatSistOS__Message *message_received = server_response -> message;
                     printf("\n Message from: %s to: %s: %s", message_received -> message_sender, "ALL", message_received -> message_content);
                 }
                 break;
             case 3:
                 if(server_response -> response_status_code == 400){
-                    Chat__Message *message_received = server_response -> message;
+                    ChatSistOS__Message *message_received = server_response -> message;
                     printf("\n Message from: %s to: %s: %s", message_received -> message_sender, "ALL", message_received -> message_content);
                 }
                 break;
             case 4:
                 if(server_response -> response_status_code == 400){
-                    Chat__Message *message_received = server_response -> message;
+                    ChatSistOS__Message *message_received = server_response -> message;
                     printf("\n Message from: %s to: %s: %s", message_received -> message_sender, "ALL", message_received -> message_content);
                 }
                 break;
@@ -122,7 +122,7 @@ void* serverResponse(void* args){
 //     while (1) {
 //         ssize_t len = recv(sock, buffer, BUFFER_SIZE, 0);
 //         if (len > 0) {
-//             Chat__Answer *answer = chat_sist_os__answer__unpack(NULL, len, buffer);
+//             ChatSistOS__Answer *answer = chat_sist_os__answer__unpack(NULL, len, buffer);
 //             if (answer != NULL && answer->message != NULL) {
 //                 printf("Received from %s: %s\n", answer->message->message_sender, answer->message->message_content);
 //                 chat_sist_os__answer__unpack(answer, NULL);
@@ -168,11 +168,11 @@ int main(int argc, char *argv[]) {
 
     int user_socket = socket(AF_INET, SOCK_STREAM, 0);
 
-    Chat__NewUser registration_user = CHAT_SIST_OS__NEW_USER__INIT;
+    ChatSistOS__NewUser registration_user = CHAT_SIST_OS__NEW_USER__INIT;
     registration_user.username = username;
     registration_user.ip = "HOLA";
 
-    Chat__UserOption user_registered_option = CHAT_SIST_OS__USER_OPTION__INIT;
+    ChatSistOS__UserOption user_registered_option = CHAT_SIST_OS__USER_OPTION__INIT;
     user_registered_option.op = user_option;
     user_registered_option.createuser = &registration_user;
 
@@ -194,7 +194,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    Chat__Answer *answer = chat_sist_os__answer__unpack(NULL, size_recv, buffer_recv);
+    ChatSistOS__Answer *answer = chat_sist_os__answer__unpack(NULL, size_recv, buffer_recv);
 
     if(answer -> response_status_code == 400){
         printf("\n Message from: %s to: %s: %s", "Server", username, answer -> response_message);
@@ -217,13 +217,13 @@ int main(int argc, char *argv[]) {
     //     fgets(recipient, 64, stdin);
     //     recipient[strcspn(recipient, "\n")] = 0;
 
-    //     Chat__Message message = CHAT__MESSAGE__INIT;
+    //     ChatSistOS__Message message = CHAT__MESSAGE__INIT;
     //     message.message_private = 1;
     //     message.message_destination = recipient;
     //     message.message_content = input;
     //     message.message_sender = username; // Replace this with the actual sender's username
 
-    //     Chat__UserOption user_option = CHAT__USER_OPTION__INIT;
+    //     ChatSistOS__UserOption user_option = CHAT__USER_OPTION__INIT;
     //     user_option.op = 5;
     //     user_option.message = &message;
 
