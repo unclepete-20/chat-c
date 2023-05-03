@@ -109,23 +109,6 @@ void* serverResponse(void* args){
     }
 }
 
-// void *receive_messages(void *arg) {
-//     uint8_t buffer[BUFFER_SIZE];
-
-//     while (1) {
-//         ssize_t len = recv(sock, buffer, BUFFER_SIZE, 0);
-//         if (len > 0) {
-//             ChatSistOS__Answer *answer = chat_sist_os__answer__unpack(NULL, len, buffer);
-//             if (answer != NULL && answer->message != NULL) {
-//                 printf("Received from %s: %s\n", answer->message->message_sender, answer->message->message_content);
-//                 chat_sist_os__answer__unpack(answer, NULL);
-//             }
-//         }
-//     }
-
-//     return NULL;
-// }
-
 int main(int argc, char *argv[]) {
     struct sockaddr_in server_address;
 
@@ -159,7 +142,7 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    // int user_socket = socket(AF_INET, SOCK_STREAM, 0);
+    printf("Conectado al server");
 
     ChatSistOS__NewUser registration_user = CHAT_SIST_OS__NEW_USER__INIT;
     registration_user.username = username;
