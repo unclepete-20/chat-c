@@ -76,11 +76,9 @@ void removeUser(char *username, char *ip, int socketFD, int status)
 // Verifica existencia de un usuario
 int userExists(char *username)
 {
-    int i;
-
     pthread_mutex_lock(&lock);
 
-    for (i = 0; i < cantUsers; i++)
+    for (int i = 0; i < cantUsers; i++)
     {
         if (strcmp(userList[i].username, username) == 0)
         {
