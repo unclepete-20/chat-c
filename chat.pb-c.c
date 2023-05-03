@@ -8,43 +8,43 @@
 
 #include "chat.pb-c.h"
 void   chat_sist_os__user_list__init
-                     (Chat__UserList         *message)
+                     (ChatSistOS__UserList         *message)
 {
-  static const Chat__UserList init_value = CHAT_SIST_OS__USER_LIST__INIT;
+  static const ChatSistOS__UserList init_value = CHAT_SIST_OS__USER_LIST__INIT;
   *message = init_value;
 }
 size_t chat_sist_os__user_list__get_packed_size
-                     (const Chat__UserList *message)
+                     (const ChatSistOS__UserList *message)
 {
   assert(message->base.descriptor == &chat_sist_os__user_list__descriptor);
   return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
 }
 size_t chat_sist_os__user_list__pack
-                     (const Chat__UserList *message,
+                     (const ChatSistOS__UserList *message,
                       uint8_t       *out)
 {
   assert(message->base.descriptor == &chat_sist_os__user_list__descriptor);
   return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
 }
 size_t chat_sist_os__user_list__pack_to_buffer
-                     (const Chat__UserList *message,
+                     (const ChatSistOS__UserList *message,
                       ProtobufCBuffer *buffer)
 {
   assert(message->base.descriptor == &chat_sist_os__user_list__descriptor);
   return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
 }
-Chat__UserList *
+ChatSistOS__UserList *
        chat_sist_os__user_list__unpack
                      (ProtobufCAllocator  *allocator,
                       size_t               len,
                       const uint8_t       *data)
 {
-  return (Chat__UserList *)
+  return (ChatSistOS__UserList *)
      protobuf_c_message_unpack (&chat_sist_os__user_list__descriptor,
                                 allocator, len, data);
 }
 void   chat_sist_os__user_list__free_unpacked
-                     (Chat__UserList *message,
+                     (ChatSistOS__UserList *message,
                       ProtobufCAllocator *allocator)
 {
   if(!message)
@@ -53,43 +53,43 @@ void   chat_sist_os__user_list__free_unpacked
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
 void   chat_sist_os__users_online__init
-                     (Chat__UsersOnline         *message)
+                     (ChatSistOS__UsersOnline         *message)
 {
-  static const Chat__UsersOnline init_value = CHAT_SIST_OS__USERS_ONLINE__INIT;
+  static const ChatSistOS__UsersOnline init_value = CHAT_SIST_OS__USERS_ONLINE__INIT;
   *message = init_value;
 }
 size_t chat_sist_os__users_online__get_packed_size
-                     (const Chat__UsersOnline *message)
+                     (const ChatSistOS__UsersOnline *message)
 {
   assert(message->base.descriptor == &chat_sist_os__users_online__descriptor);
   return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
 }
 size_t chat_sist_os__users_online__pack
-                     (const Chat__UsersOnline *message,
+                     (const ChatSistOS__UsersOnline *message,
                       uint8_t       *out)
 {
   assert(message->base.descriptor == &chat_sist_os__users_online__descriptor);
   return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
 }
 size_t chat_sist_os__users_online__pack_to_buffer
-                     (const Chat__UsersOnline *message,
+                     (const ChatSistOS__UsersOnline *message,
                       ProtobufCBuffer *buffer)
 {
   assert(message->base.descriptor == &chat_sist_os__users_online__descriptor);
   return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
 }
-Chat__UsersOnline *
+ChatSistOS__UsersOnline *
        chat_sist_os__users_online__unpack
                      (ProtobufCAllocator  *allocator,
                       size_t               len,
                       const uint8_t       *data)
 {
-  return (Chat__UsersOnline *)
+  return (ChatSistOS__UsersOnline *)
      protobuf_c_message_unpack (&chat_sist_os__users_online__descriptor,
                                 allocator, len, data);
 }
 void   chat_sist_os__users_online__free_unpacked
-                     (Chat__UsersOnline *message,
+                     (ChatSistOS__UsersOnline *message,
                       ProtobufCAllocator *allocator)
 {
   if(!message)
@@ -98,43 +98,43 @@ void   chat_sist_os__users_online__free_unpacked
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
 void   chat_sist_os__user_option__init
-                     (Chat__UserOption         *message)
+                     (ChatSistOS__UserOption         *message)
 {
-  static const Chat__UserOption init_value = CHAT_SIST_OS__USER_OPTION__INIT;
+  static const ChatSistOS__UserOption init_value = CHAT_SIST_OS__USER_OPTION__INIT;
   *message = init_value;
 }
 size_t chat_sist_os__user_option__get_packed_size
-                     (const Chat__UserOption *message)
+                     (const ChatSistOS__UserOption *message)
 {
   assert(message->base.descriptor == &chat_sist_os__user_option__descriptor);
   return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
 }
 size_t chat_sist_os__user_option__pack
-                     (const Chat__UserOption *message,
+                     (const ChatSistOS__UserOption *message,
                       uint8_t       *out)
 {
   assert(message->base.descriptor == &chat_sist_os__user_option__descriptor);
   return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
 }
 size_t chat_sist_os__user_option__pack_to_buffer
-                     (const Chat__UserOption *message,
+                     (const ChatSistOS__UserOption *message,
                       ProtobufCBuffer *buffer)
 {
   assert(message->base.descriptor == &chat_sist_os__user_option__descriptor);
   return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
 }
-Chat__UserOption *
+ChatSistOS__UserOption *
        chat_sist_os__user_option__unpack
                      (ProtobufCAllocator  *allocator,
                       size_t               len,
                       const uint8_t       *data)
 {
-  return (Chat__UserOption *)
+  return (ChatSistOS__UserOption *)
      protobuf_c_message_unpack (&chat_sist_os__user_option__descriptor,
                                 allocator, len, data);
 }
 void   chat_sist_os__user_option__free_unpacked
-                     (Chat__UserOption *message,
+                     (ChatSistOS__UserOption *message,
                       ProtobufCAllocator *allocator)
 {
   if(!message)
@@ -143,43 +143,43 @@ void   chat_sist_os__user_option__free_unpacked
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
 void   chat_sist_os__answer__init
-                     (Chat__Answer         *message)
+                     (ChatSistOS__Answer         *message)
 {
-  static const Chat__Answer init_value = CHAT_SIST_OS__ANSWER__INIT;
+  static const ChatSistOS__Answer init_value = CHAT_SIST_OS__ANSWER__INIT;
   *message = init_value;
 }
 size_t chat_sist_os__answer__get_packed_size
-                     (const Chat__Answer *message)
+                     (const ChatSistOS__Answer *message)
 {
   assert(message->base.descriptor == &chat_sist_os__answer__descriptor);
   return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
 }
 size_t chat_sist_os__answer__pack
-                     (const Chat__Answer *message,
+                     (const ChatSistOS__Answer *message,
                       uint8_t       *out)
 {
   assert(message->base.descriptor == &chat_sist_os__answer__descriptor);
   return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
 }
 size_t chat_sist_os__answer__pack_to_buffer
-                     (const Chat__Answer *message,
+                     (const ChatSistOS__Answer *message,
                       ProtobufCBuffer *buffer)
 {
   assert(message->base.descriptor == &chat_sist_os__answer__descriptor);
   return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
 }
-Chat__Answer *
+ChatSistOS__Answer *
        chat_sist_os__answer__unpack
                      (ProtobufCAllocator  *allocator,
                       size_t               len,
                       const uint8_t       *data)
 {
-  return (Chat__Answer *)
+  return (ChatSistOS__Answer *)
      protobuf_c_message_unpack (&chat_sist_os__answer__descriptor,
                                 allocator, len, data);
 }
 void   chat_sist_os__answer__free_unpacked
-                     (Chat__Answer *message,
+                     (ChatSistOS__Answer *message,
                       ProtobufCAllocator *allocator)
 {
   if(!message)
@@ -188,43 +188,43 @@ void   chat_sist_os__answer__free_unpacked
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
 void   chat_sist_os__user__init
-                     (Chat__User         *message)
+                     (ChatSistOS__User         *message)
 {
-  static const Chat__User init_value = CHAT_SIST_OS__USER__INIT;
+  static const ChatSistOS__User init_value = CHAT_SIST_OS__USER__INIT;
   *message = init_value;
 }
 size_t chat_sist_os__user__get_packed_size
-                     (const Chat__User *message)
+                     (const ChatSistOS__User *message)
 {
   assert(message->base.descriptor == &chat_sist_os__user__descriptor);
   return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
 }
 size_t chat_sist_os__user__pack
-                     (const Chat__User *message,
+                     (const ChatSistOS__User *message,
                       uint8_t       *out)
 {
   assert(message->base.descriptor == &chat_sist_os__user__descriptor);
   return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
 }
 size_t chat_sist_os__user__pack_to_buffer
-                     (const Chat__User *message,
+                     (const ChatSistOS__User *message,
                       ProtobufCBuffer *buffer)
 {
   assert(message->base.descriptor == &chat_sist_os__user__descriptor);
   return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
 }
-Chat__User *
+ChatSistOS__User *
        chat_sist_os__user__unpack
                      (ProtobufCAllocator  *allocator,
                       size_t               len,
                       const uint8_t       *data)
 {
-  return (Chat__User *)
+  return (ChatSistOS__User *)
      protobuf_c_message_unpack (&chat_sist_os__user__descriptor,
                                 allocator, len, data);
 }
 void   chat_sist_os__user__free_unpacked
-                     (Chat__User *message,
+                     (ChatSistOS__User *message,
                       ProtobufCAllocator *allocator)
 {
   if(!message)
@@ -233,43 +233,43 @@ void   chat_sist_os__user__free_unpacked
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
 void   chat_sist_os__new_user__init
-                     (Chat__NewUser         *message)
+                     (ChatSistOS__NewUser         *message)
 {
-  static const Chat__NewUser init_value = CHAT_SIST_OS__NEW_USER__INIT;
+  static const ChatSistOS__NewUser init_value = CHAT_SIST_OS__NEW_USER__INIT;
   *message = init_value;
 }
 size_t chat_sist_os__new_user__get_packed_size
-                     (const Chat__NewUser *message)
+                     (const ChatSistOS__NewUser *message)
 {
   assert(message->base.descriptor == &chat_sist_os__new_user__descriptor);
   return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
 }
 size_t chat_sist_os__new_user__pack
-                     (const Chat__NewUser *message,
+                     (const ChatSistOS__NewUser *message,
                       uint8_t       *out)
 {
   assert(message->base.descriptor == &chat_sist_os__new_user__descriptor);
   return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
 }
 size_t chat_sist_os__new_user__pack_to_buffer
-                     (const Chat__NewUser *message,
+                     (const ChatSistOS__NewUser *message,
                       ProtobufCBuffer *buffer)
 {
   assert(message->base.descriptor == &chat_sist_os__new_user__descriptor);
   return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
 }
-Chat__NewUser *
+ChatSistOS__NewUser *
        chat_sist_os__new_user__unpack
                      (ProtobufCAllocator  *allocator,
                       size_t               len,
                       const uint8_t       *data)
 {
-  return (Chat__NewUser *)
+  return (ChatSistOS__NewUser *)
      protobuf_c_message_unpack (&chat_sist_os__new_user__descriptor,
                                 allocator, len, data);
 }
 void   chat_sist_os__new_user__free_unpacked
-                     (Chat__NewUser *message,
+                     (ChatSistOS__NewUser *message,
                       ProtobufCAllocator *allocator)
 {
   if(!message)
@@ -278,43 +278,43 @@ void   chat_sist_os__new_user__free_unpacked
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
 void   chat_sist_os__status__init
-                     (Chat__Status         *message)
+                     (ChatSistOS__Status         *message)
 {
-  static const Chat__Status init_value = CHAT_SIST_OS__STATUS__INIT;
+  static const ChatSistOS__Status init_value = CHAT_SIST_OS__STATUS__INIT;
   *message = init_value;
 }
 size_t chat_sist_os__status__get_packed_size
-                     (const Chat__Status *message)
+                     (const ChatSistOS__Status *message)
 {
   assert(message->base.descriptor == &chat_sist_os__status__descriptor);
   return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
 }
 size_t chat_sist_os__status__pack
-                     (const Chat__Status *message,
+                     (const ChatSistOS__Status *message,
                       uint8_t       *out)
 {
   assert(message->base.descriptor == &chat_sist_os__status__descriptor);
   return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
 }
 size_t chat_sist_os__status__pack_to_buffer
-                     (const Chat__Status *message,
+                     (const ChatSistOS__Status *message,
                       ProtobufCBuffer *buffer)
 {
   assert(message->base.descriptor == &chat_sist_os__status__descriptor);
   return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
 }
-Chat__Status *
+ChatSistOS__Status *
        chat_sist_os__status__unpack
                      (ProtobufCAllocator  *allocator,
                       size_t               len,
                       const uint8_t       *data)
 {
-  return (Chat__Status *)
+  return (ChatSistOS__Status *)
      protobuf_c_message_unpack (&chat_sist_os__status__descriptor,
                                 allocator, len, data);
 }
 void   chat_sist_os__status__free_unpacked
-                     (Chat__Status *message,
+                     (ChatSistOS__Status *message,
                       ProtobufCAllocator *allocator)
 {
   if(!message)
@@ -323,43 +323,43 @@ void   chat_sist_os__status__free_unpacked
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
 void   chat_sist_os__message__init
-                     (Chat__Message         *message)
+                     (ChatSistOS__Message         *message)
 {
-  static const Chat__Message init_value = CHAT_SIST_OS__MESSAGE__INIT;
+  static const ChatSistOS__Message init_value = CHAT_SIST_OS__MESSAGE__INIT;
   *message = init_value;
 }
 size_t chat_sist_os__message__get_packed_size
-                     (const Chat__Message *message)
+                     (const ChatSistOS__Message *message)
 {
   assert(message->base.descriptor == &chat_sist_os__message__descriptor);
   return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
 }
 size_t chat_sist_os__message__pack
-                     (const Chat__Message *message,
+                     (const ChatSistOS__Message *message,
                       uint8_t       *out)
 {
   assert(message->base.descriptor == &chat_sist_os__message__descriptor);
   return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
 }
 size_t chat_sist_os__message__pack_to_buffer
-                     (const Chat__Message *message,
+                     (const ChatSistOS__Message *message,
                       ProtobufCBuffer *buffer)
 {
   assert(message->base.descriptor == &chat_sist_os__message__descriptor);
   return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
 }
-Chat__Message *
+ChatSistOS__Message *
        chat_sist_os__message__unpack
                      (ProtobufCAllocator  *allocator,
                       size_t               len,
                       const uint8_t       *data)
 {
-  return (Chat__Message *)
+  return (ChatSistOS__Message *)
      protobuf_c_message_unpack (&chat_sist_os__message__descriptor,
                                 allocator, len, data);
 }
 void   chat_sist_os__message__free_unpacked
-                     (Chat__Message *message,
+                     (ChatSistOS__Message *message,
                       ProtobufCAllocator *allocator)
 {
   if(!message)
@@ -375,7 +375,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__user_list__field_descriptors
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_BOOL,
     0,   /* quantifier_offset */
-    offsetof(Chat__UserList, list),
+    offsetof(ChatSistOS__UserList, list),
     NULL,
     NULL,
     0,             /* flags */
@@ -387,7 +387,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__user_list__field_descriptors
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_STRING,
     0,   /* quantifier_offset */
-    offsetof(Chat__UserList, user_name),
+    offsetof(ChatSistOS__UserList, user_name),
     NULL,
     &protobuf_c_empty_string,
     0,             /* flags */
@@ -408,9 +408,9 @@ const ProtobufCMessageDescriptor chat_sist_os__user_list__descriptor =
   PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
   "chat_sistOS.UserList",
   "UserList",
-  "Chat__UserList",
+  "ChatSistOS__UserList",
   "chat_sistOS",
-  sizeof(Chat__UserList),
+  sizeof(ChatSistOS__UserList),
   2,
   chat_sist_os__user_list__field_descriptors,
   chat_sist_os__user_list__field_indices_by_name,
@@ -425,8 +425,8 @@ static const ProtobufCFieldDescriptor chat_sist_os__users_online__field_descript
     1,
     PROTOBUF_C_LABEL_REPEATED,
     PROTOBUF_C_TYPE_MESSAGE,
-    offsetof(Chat__UsersOnline, n_users),
-    offsetof(Chat__UsersOnline, users),
+    offsetof(ChatSistOS__UsersOnline, n_users),
+    offsetof(ChatSistOS__UsersOnline, users),
     &chat_sist_os__user__descriptor,
     NULL,
     0,             /* flags */
@@ -446,9 +446,9 @@ const ProtobufCMessageDescriptor chat_sist_os__users_online__descriptor =
   PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
   "chat_sistOS.UsersOnline",
   "UsersOnline",
-  "Chat__UsersOnline",
+  "ChatSistOS__UsersOnline",
   "chat_sistOS",
-  sizeof(Chat__UsersOnline),
+  sizeof(ChatSistOS__UsersOnline),
   1,
   chat_sist_os__users_online__field_descriptors,
   chat_sist_os__users_online__field_indices_by_name,
@@ -464,7 +464,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__user_option__field_descripto
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
-    offsetof(Chat__UserOption, op),
+    offsetof(ChatSistOS__UserOption, op),
     NULL,
     NULL,
     0,             /* flags */
@@ -476,7 +476,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__user_option__field_descripto
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
-    offsetof(Chat__UserOption, createuser),
+    offsetof(ChatSistOS__UserOption, createuser),
     &chat_sist_os__new_user__descriptor,
     NULL,
     0,             /* flags */
@@ -488,7 +488,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__user_option__field_descripto
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
-    offsetof(Chat__UserOption, userlist),
+    offsetof(ChatSistOS__UserOption, userlist),
     &chat_sist_os__user_list__descriptor,
     NULL,
     0,             /* flags */
@@ -500,7 +500,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__user_option__field_descripto
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
-    offsetof(Chat__UserOption, status),
+    offsetof(ChatSistOS__UserOption, status),
     &chat_sist_os__status__descriptor,
     NULL,
     0,             /* flags */
@@ -512,7 +512,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__user_option__field_descripto
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
-    offsetof(Chat__UserOption, message),
+    offsetof(ChatSistOS__UserOption, message),
     &chat_sist_os__message__descriptor,
     NULL,
     0,             /* flags */
@@ -536,9 +536,9 @@ const ProtobufCMessageDescriptor chat_sist_os__user_option__descriptor =
   PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
   "chat_sistOS.UserOption",
   "UserOption",
-  "Chat__UserOption",
+  "ChatSistOS__UserOption",
   "chat_sistOS",
-  sizeof(Chat__UserOption),
+  sizeof(ChatSistOS__UserOption),
   5,
   chat_sist_os__user_option__field_descriptors,
   chat_sist_os__user_option__field_indices_by_name,
@@ -554,7 +554,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__answer__field_descriptors[7]
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
-    offsetof(Chat__Answer, op),
+    offsetof(ChatSistOS__Answer, op),
     NULL,
     NULL,
     0,             /* flags */
@@ -566,7 +566,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__answer__field_descriptors[7]
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
-    offsetof(Chat__Answer, response_status_code),
+    offsetof(ChatSistOS__Answer, response_status_code),
     NULL,
     NULL,
     0,             /* flags */
@@ -578,7 +578,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__answer__field_descriptors[7]
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_STRING,
     0,   /* quantifier_offset */
-    offsetof(Chat__Answer, response_message),
+    offsetof(ChatSistOS__Answer, response_message),
     NULL,
     &protobuf_c_empty_string,
     0,             /* flags */
@@ -590,7 +590,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__answer__field_descriptors[7]
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
-    offsetof(Chat__Answer, users_online),
+    offsetof(ChatSistOS__Answer, users_online),
     &chat_sist_os__users_online__descriptor,
     NULL,
     0,             /* flags */
@@ -602,7 +602,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__answer__field_descriptors[7]
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
-    offsetof(Chat__Answer, message),
+    offsetof(ChatSistOS__Answer, message),
     &chat_sist_os__message__descriptor,
     NULL,
     0,             /* flags */
@@ -614,7 +614,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__answer__field_descriptors[7]
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
-    offsetof(Chat__Answer, user),
+    offsetof(ChatSistOS__Answer, user),
     &chat_sist_os__user__descriptor,
     NULL,
     0,             /* flags */
@@ -626,7 +626,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__answer__field_descriptors[7]
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
-    offsetof(Chat__Answer, status),
+    offsetof(ChatSistOS__Answer, status),
     &chat_sist_os__status__descriptor,
     NULL,
     0,             /* flags */
@@ -652,9 +652,9 @@ const ProtobufCMessageDescriptor chat_sist_os__answer__descriptor =
   PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
   "chat_sistOS.Answer",
   "Answer",
-  "Chat__Answer",
+  "ChatSistOS__Answer",
   "chat_sistOS",
-  sizeof(Chat__Answer),
+  sizeof(ChatSistOS__Answer),
   7,
   chat_sist_os__answer__field_descriptors,
   chat_sist_os__answer__field_indices_by_name,
@@ -670,7 +670,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__user__field_descriptors[3] =
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_STRING,
     0,   /* quantifier_offset */
-    offsetof(Chat__User, user_name),
+    offsetof(ChatSistOS__User, user_name),
     NULL,
     &protobuf_c_empty_string,
     0,             /* flags */
@@ -682,7 +682,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__user__field_descriptors[3] =
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_STRING,
     0,   /* quantifier_offset */
-    offsetof(Chat__User, user_ip),
+    offsetof(ChatSistOS__User, user_ip),
     NULL,
     &protobuf_c_empty_string,
     0,             /* flags */
@@ -694,7 +694,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__user__field_descriptors[3] =
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
-    offsetof(Chat__User, user_state),
+    offsetof(ChatSistOS__User, user_state),
     NULL,
     NULL,
     0,             /* flags */
@@ -716,9 +716,9 @@ const ProtobufCMessageDescriptor chat_sist_os__user__descriptor =
   PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
   "chat_sistOS.User",
   "User",
-  "Chat__User",
+  "ChatSistOS__User",
   "chat_sistOS",
-  sizeof(Chat__User),
+  sizeof(ChatSistOS__User),
   3,
   chat_sist_os__user__field_descriptors,
   chat_sist_os__user__field_indices_by_name,
@@ -734,7 +734,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__new_user__field_descriptors[
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_STRING,
     0,   /* quantifier_offset */
-    offsetof(Chat__NewUser, username),
+    offsetof(ChatSistOS__NewUser, username),
     NULL,
     &protobuf_c_empty_string,
     0,             /* flags */
@@ -746,7 +746,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__new_user__field_descriptors[
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_STRING,
     0,   /* quantifier_offset */
-    offsetof(Chat__NewUser, ip),
+    offsetof(ChatSistOS__NewUser, ip),
     NULL,
     &protobuf_c_empty_string,
     0,             /* flags */
@@ -767,9 +767,9 @@ const ProtobufCMessageDescriptor chat_sist_os__new_user__descriptor =
   PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
   "chat_sistOS.NewUser",
   "NewUser",
-  "Chat__NewUser",
+  "ChatSistOS__NewUser",
   "chat_sistOS",
-  sizeof(Chat__NewUser),
+  sizeof(ChatSistOS__NewUser),
   2,
   chat_sist_os__new_user__field_descriptors,
   chat_sist_os__new_user__field_indices_by_name,
@@ -785,7 +785,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__status__field_descriptors[2]
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_STRING,
     0,   /* quantifier_offset */
-    offsetof(Chat__Status, user_name),
+    offsetof(ChatSistOS__Status, user_name),
     NULL,
     &protobuf_c_empty_string,
     0,             /* flags */
@@ -797,7 +797,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__status__field_descriptors[2]
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
-    offsetof(Chat__Status, user_state),
+    offsetof(ChatSistOS__Status, user_state),
     NULL,
     NULL,
     0,             /* flags */
@@ -818,9 +818,9 @@ const ProtobufCMessageDescriptor chat_sist_os__status__descriptor =
   PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
   "chat_sistOS.Status",
   "Status",
-  "Chat__Status",
+  "ChatSistOS__Status",
   "chat_sistOS",
-  sizeof(Chat__Status),
+  sizeof(ChatSistOS__Status),
   2,
   chat_sist_os__status__field_descriptors,
   chat_sist_os__status__field_indices_by_name,
@@ -836,7 +836,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__message__field_descriptors[4
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_BOOL,
     0,   /* quantifier_offset */
-    offsetof(Chat__Message, message_private),
+    offsetof(ChatSistOS__Message, message_private),
     NULL,
     NULL,
     0,             /* flags */
@@ -848,7 +848,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__message__field_descriptors[4
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_STRING,
     0,   /* quantifier_offset */
-    offsetof(Chat__Message, message_destination),
+    offsetof(ChatSistOS__Message, message_destination),
     NULL,
     &protobuf_c_empty_string,
     0,             /* flags */
@@ -860,7 +860,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__message__field_descriptors[4
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_STRING,
     0,   /* quantifier_offset */
-    offsetof(Chat__Message, message_content),
+    offsetof(ChatSistOS__Message, message_content),
     NULL,
     &protobuf_c_empty_string,
     0,             /* flags */
@@ -872,7 +872,7 @@ static const ProtobufCFieldDescriptor chat_sist_os__message__field_descriptors[4
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_STRING,
     0,   /* quantifier_offset */
-    offsetof(Chat__Message, message_sender),
+    offsetof(ChatSistOS__Message, message_sender),
     NULL,
     &protobuf_c_empty_string,
     0,             /* flags */
@@ -895,9 +895,9 @@ const ProtobufCMessageDescriptor chat_sist_os__message__descriptor =
   PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
   "chat_sistOS.Message",
   "Message",
-  "Chat__Message",
+  "ChatSistOS__Message",
   "chat_sistOS",
-  sizeof(Chat__Message),
+  sizeof(ChatSistOS__Message),
   4,
   chat_sist_os__message__field_descriptors,
   chat_sist_os__message__field_indices_by_name,

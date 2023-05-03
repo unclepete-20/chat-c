@@ -9,8 +9,9 @@
 #include <pthread.h>
 #include "chat.pb-c.h"
 
-#define BUFFER_SIZE 1024
+
 #define BACKLOG 10
+#define BUFFER_SIZE 1024
 
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
@@ -26,13 +27,13 @@ typedef struct
 // Constantes de usuario
 #define MAX_USERS 100
 User userList[MAX_USERS];
-int cantUsers = 0;
+int numUsers = 0;
 
 
 // Permite ingresar un nuevo usuario al servicio
 void addUser(char *username, char *ip, int socketFD, int status)
 {
-    if (cantUsers >= MAX_USERS)
+    if (numUsers >= MAX_USERS)
     {
         printf("SERVER AT FULL CAPACITY. UNABLE TO ADD NEW USERS.\n");
         return;
@@ -43,26 +44,28 @@ void addUser(char *username, char *ip, int socketFD, int status)
     newUser.socketFD = socketFD;
     newUser.status = status;
     newUser.last_active = time(NULL);
-    userList[cantUsers] = newUser;
-    cantUsers++;
+    userList[numUsers] = newUser;
+    numUsers++;
 }
 
 // Permite eliminar un usuario del servicio
 void removeUser(char *username, char *ip, int socketFD, int status)
 {
+    int i, j;
+
     pthread_mutex_lock(&lock);
 
-    for (int i = 0; i < cantUsers; i++)
+    for (i = 0; i < numUsers; i++)
     {
         User user = userList[i];
         if (strcmp(user.username, username) == 0 && strcmp(user.ip, ip) == 0 && user.socketFD == socketFD)
         {
             // Encontró el usuario, lo elimina
-            for (int j = i; j < cantUsers - 1; j++)
+            for (j = i; j < numUsers - 1; j++)
             {
                 userList[j] = userList[j + 1];
             }
-            cantUsers--;
+            numUsers--;
             printf("USER ELIMINATED: %s\n", username);
             return;
         }
@@ -76,9 +79,11 @@ void removeUser(char *username, char *ip, int socketFD, int status)
 // Verifica existencia de un usuario
 int userExists(char *username)
 {
+    int i;
+
     pthread_mutex_lock(&lock);
 
-    for (int i = 0; i < cantUsers; i++)
+    for (i = 0; i < numUsers; i++)
     {
         if (strcmp(userList[i].username, username) == 0)
         {
@@ -99,7 +104,7 @@ void* check_inactive_users(void *arg) {
     while (1) {
         time_t current_time = time(NULL);
         printf("________________TIME-ON-SERVER-(INFO)_______________________\n");
-        for (int i = 0; i < cantUsers; i++) {
+        for (int i = 0; i < numUsers; i++) {
             double elapsed_time = difftime(current_time, userList[i].last_active);
             printf("User: %s, Elapsed Time: %.0f\n", userList[i].username, elapsed_time);
             if (elapsed_time >= 60) {
@@ -117,7 +122,7 @@ void *handle_client(void *arg)
 {
     int client_socket = *(int *)arg;
     int client_in_session = 1;
-
+    /*
     // Recibir el registro del cliente
     uint8_t recv_buffer[BUFFER_SIZE];
     ssize_t recv_size = recv(client_socket, recv_buffer, sizeof(recv_buffer), 0);
@@ -139,6 +144,7 @@ void *handle_client(void *arg)
 
     printf("\n >> |NEW USER CONNECTED| >>> NAME: %s  >>> IP: %s\n", chat_registration->username, chat_registration->ip);
 
+    
     // Informacion del Cliente asociada al thread
     User MyInfo;
     strcpy(MyInfo.username, chat_registration->username);
@@ -237,7 +243,7 @@ void *handle_client(void *arg)
             pthread_mutex_lock(&lock);
 
             // Se recorre la lista de usuarios
-            for (int i = 0; i < cantUsers; i++)
+            for (int i = 0; i < numUsers; i++)
             {
                 if (strcmp(userList[i].username, MyInfo.username) == 0)
                 {
@@ -284,7 +290,7 @@ void *handle_client(void *arg)
 
             pthread_mutex_lock(&lock);
 
-            for (int i = 0; i < cantUsers; i++)
+            for (int i = 0; i < numUsers; i++)
             {
                 if (strcmp(userList[i].username, received_message_directo->message_destination) == 0)
                 {
@@ -356,7 +362,7 @@ void *handle_client(void *arg)
 
                 pthread_mutex_lock(&lock);
 
-                for (int i = 0; i < cantUsers; i++) {
+                for (int i = 0; i < numUsers; i++) {
                     if (strcmp(userList[i].username, MyInfo.username) == 0) {
                         // revisar si el usuario esta inactivo en este caso activarlo como activo
                         if (userList[i].status == 3){
@@ -381,12 +387,12 @@ void *handle_client(void *arg)
 
             //Usuarios online
             Chat__UsersOnline connected_clients = CHAT_SIST_OS__USERS_ONLINE__INIT;
-            connected_clients.n_users = cantUsers;
-            connected_clients.users   = malloc(sizeof(Chat__User *) * cantUsers);
+            connected_clients.n_users = numUsers;
+            connected_clients.users   = malloc(sizeof(Chat__User *) * numUsers);
 
             pthread_mutex_lock(&lock);
 
-            for (int i = 0; i < cantUsers; i++)
+            for (int i = 0; i < numUsers; i++)
             {
                 if (strcmp(userList[i].username, MyInfo.username) == 0) {
                     // revisar si el usuario esta inactivo en este caso activarlo como activo
@@ -432,12 +438,12 @@ void *handle_client(void *arg)
                 int user_found = 0;
                 // Se muestran los usuarios disponibles en linea
                 Chat__UsersOnline connected_clients = CHAT_SIST_OS__USERS_ONLINE__INIT;
-                connected_clients.n_users = cantUsers;
-                connected_clients.users   = malloc(sizeof(Chat__User *) * cantUsers);
+                connected_clients.n_users = numUsers;
+                connected_clients.users   = malloc(sizeof(Chat__User *) * numUsers);
                 
                 pthread_mutex_lock(&lock);
 
-                for (int i = 0; i < cantUsers; i++)
+                for (int i = 0; i < numUsers; i++)
                 {
                     if (strcmp(userList[i].username, MyInfo.username) == 0) {
                         if (userList[i].status == 3){
@@ -495,7 +501,7 @@ void *handle_client(void *arg)
         case 6:
 
             pthread_mutex_lock(&lock);
-            for (int i = 0; i < cantUsers; i++){
+            for (int i = 0; i < numUsers; i++){
                 if (strcmp(userList[i].username, MyInfo.username) == 0) {
                     if (userList[i].status == 3){
                         userList[i].status = 1;
@@ -523,7 +529,7 @@ void *handle_client(void *arg)
 
     printf("\n\n ********** CONNECTED USERS **********\n");
 
-    for (int i = 0; i < cantUsers; i++)
+    for (int i = 0; i < numUsers; i++)
     {
         printf("USER INFO #%d:\n", i + 1);
         printf("USERNAME: %s\n", userList[i].username);
@@ -533,6 +539,7 @@ void *handle_client(void *arg)
         printf("\n");
     }
     close(client_socket);
+    */
 }
 
 int main(int argc, char **argv)
@@ -550,7 +557,7 @@ int main(int argc, char **argv)
     int server_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (server_socket < 0)
     {
-        perror("SOCKET UNABLE TO LISTEN");
+        perror("SOCKE UNABLE TO LISTEN");
         exit(1);
     }
 
