@@ -550,7 +550,7 @@ int main(int argc, char **argv)
     int server_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (server_socket < 0)
     {
-        perror("SOCKE UNABLE TO LISTEN");
+        perror("SOCKET UNABLE TO LISTEN");
         exit(1);
     }
 

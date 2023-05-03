@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include "chat.pb-c.h"
+#include <ifaddrs.h>
 
 //#define SERVER_IP "127.0.0.1"
 //#define PORT 9001
@@ -55,25 +56,32 @@ char* userStatus(int status_value){
     return response;
 }
 
+// char* getUserIP(){
+//     struct ifaddrs *ifaddr, *ifa;
+//     char* user_ip = NULL;
+
+//     if(getifaddrs(&ifaddr) == -1);
+// }
+
 void* serverResponse(void* args){
     int socket = *(int*) args;
 
     while(1){
 
-        uint8_t buffer_receive[BUFFER_SIZE];
-        ssize_t size_receive = recv(socket, buffer_receive, sizeof(buffer_receive), 0);
+        uint8_t buffer_recv[BUFFER_SIZE];
+        ssize_t size_recv = recv(socket, buffer_recv, sizeof(buffer_recv), 0);
 
-        if(size_receive < 0){
+        if(size_recv< 0){
             perror("Response ERROR");
             exit(1);
         }
 
-        if(size_receive == 0){
+        if(size_recv == 0){
             perror("Server Not Available");
             exit(1);
         }
 
-        Chat__Answer *server_response = chat_sist_os__answer__unpack(NULL, size_receive, buffer_receive);
+        Chat__Answer *server_response = chat_sist_os__answer__unpack(NULL, size_recv, buffer_recv);
 
         int option = server_response -> op;
 
@@ -137,6 +145,7 @@ int main(int argc, char *argv[]) {
     char* username = argv[1];
     char* ip_server = argv[2];
     int* port_server = atoi(argv[3]);
+    int user_option = 0;
 
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("socket");
@@ -155,6 +164,43 @@ int main(int argc, char *argv[]) {
     if (connect(sock, (struct sockaddr *)&server_address, sizeof(server_address)) < 0) {
         perror("connect");
         exit(EXIT_FAILURE);
+    }
+
+    int user_socket = socket(AF_INET, SOCK_STREAM, 0);
+
+    Chat__NewUser registration_user = CHAT_SIST_OS__NEW_USER__INIT;
+    registration_user.username = username;
+    registration_user.ip = "HOLA";
+
+    Chat__UserOption user_registered_option = CHAT_SIST_OS__USER_OPTION__INIT;
+    user_registered_option.op = user_option;
+    user_registered_option.createuser = &registration_user;
+
+    size_t serialized_registatrion = chat_sist_os__user_option__get_packed_size(&user_registered_option);
+    uint8_t *registration_buffer = malloc(serialized_registatrion);
+    chat_sist_os__user_option__pack(&user_registered_option, registration_buffer);
+
+    if(send(user_socket, registration_buffer, serialized_registatrion, 0) < 0){
+        perror("MESSAGE ERROR");
+        exit(1);
+    }
+
+    free(registration_buffer);
+
+    uint8_t buffer_recv[BUFFER_SIZE];
+    ssize_t size_recv= recv(user_socket, buffer_recv, sizeof(buffer_recv), 0);
+    if(size_recv < 0){
+        perror("NO RESPONSE RECEIVED");
+        exit(1);
+    }
+
+    Chat__Answer *answer = chat_sist_os__answer__unpack(NULL, size_recv, buffer_recv);
+
+    if(answer -> response_status_code == 400){
+        printf("\n Message from: %s to: %s: %s", "Server", username, answer -> response_message);
+    }
+    else{
+        printf("SE CAGO EN TODO");
     }
 
     // pthread_t receive_thread;
@@ -188,7 +234,7 @@ int main(int argc, char *argv[]) {
     //     send(sock, buffer, message_len, 0);
     // }
 
-    close(sock);
+    // close(sock);
 
     return 0;
 }
