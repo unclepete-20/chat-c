@@ -455,6 +455,7 @@ void *handle_client(void *arg)
                     chat_sist_os__user__init(new_user);
                     ChatSistOS__User *empty = malloc(sizeof(ChatSistOS__User));
                     chat_sist_os__user__init(empty);
+                    
                     empty->user_name = "NULL";
                     new_user->user_name = userList[i].username;
                     new_user->user_state = userList[i].status;
