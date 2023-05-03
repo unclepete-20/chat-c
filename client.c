@@ -51,24 +51,79 @@ char* userStatus(int status_value){
         default:
             break;
     }
+
+    return response;
 }
 
-void *receive_messages(void *arg) {
-    uint8_t buffer[BUFFER_SIZE];
+void* serverResponse(void* args){
+    int socket = *(int*) args;
 
-    while (1) {
-        ssize_t len = recv(sock, buffer, BUFFER_SIZE, 0);
-        if (len > 0) {
-            Chat__Answer *answer = chat__answer__unpack(NULL, len, buffer);
-            if (answer != NULL && answer->message != NULL) {
-                printf("Received from %s: %s\n", answer->message->message_sender, answer->message->message_content);
-                chat__answer__free_unpacked(answer, NULL);
-            }
+    while(1){
+
+        uint8_t buffer_receive[BUFFER_SIZE];
+        ssize_t size_receive = recv(socket, buffer_receive, sizeof(buffer_receive), 0);
+
+        if(size_receive < 0){
+            perror("Response ERROR");
+            exit(1);
+        }
+
+        if(size_receive == 0){
+            perror("Server Not Available");
+            exit(1);
+        }
+
+        Chat__Answer *server_response = chat_sist_os__answer__unpack(NULL, size_receive, buffer_receive);
+
+        int option = server_response -> op;
+
+        switch (option){
+            case 1:
+                if(server_response -> response_status_code == 400){
+                    Chat__Message *message_received = server_response -> message;
+                    printf("\n Message from: %s to: %s: %s", message_received -> message_sender, "ALL", message_received -> message_content);
+                }
+                break;
+            case 2:
+                if(server_response -> response_status_code == 400){
+                    Chat__Message *message_received = server_response -> message;
+                    printf("\n Message from: %s to: %s: %s", message_received -> message_sender, "ALL", message_received -> message_content);
+                }
+                break;
+            case 3:
+                if(server_response -> response_status_code == 400){
+                    Chat__Message *message_received = server_response -> message;
+                    printf("\n Message from: %s to: %s: %s", message_received -> message_sender, "ALL", message_received -> message_content);
+                }
+                break;
+            case 4:
+                if(server_response -> response_status_code == 400){
+                    Chat__Message *message_received = server_response -> message;
+                    printf("\n Message from: %s to: %s: %s", message_received -> message_sender, "ALL", message_received -> message_content);
+                }
+                break;
+            default:
+                break;
         }
     }
-
-    return NULL;
 }
+
+// void *receive_messages(void *arg) {
+//     uint8_t buffer[BUFFER_SIZE];
+
+//     while (1) {
+//         ssize_t len = recv(sock, buffer, BUFFER_SIZE, 0);
+//         if (len > 0) {
+//             Chat__Answer *answer = chat_sist_os__answer__unpack(NULL, len, buffer);
+//             if (answer != NULL && answer->message != NULL) {
+//                 printf("Received from %s: %s\n", answer->message->message_sender, answer->message->message_content);
+//                 chat_sist_os__answer__unpack(answer, NULL);
+//             }
+//         }
+//     }
+
+//     return NULL;
+// }
 
 int main(int argc, char *argv[]) {
     struct sockaddr_in server_address;
@@ -81,7 +136,7 @@ int main(int argc, char *argv[]) {
 
     char* username = argv[1];
     char* ip_server = argv[2];
-    int* port_server = argv[3];
+    int* port_server = atoi(argv[3]);
 
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("socket");
@@ -102,36 +157,36 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    pthread_t receive_thread;
-    pthread_create(&receive_thread, NULL, receive_messages, NULL);
+    // pthread_t receive_thread;
+    // pthread_create(&receive_thread, NULL, receive_messages, NULL);
 
-    while (1) {
-        char input[MAX_INPUT_SIZE];
-        if (fgets(input, MAX_INPUT_SIZE, stdin) == NULL) {
-            break;
-        }
+    // while (1) {
+    //     char input[MAX_INPUT_SIZE];
+    //     if (fgets(input, MAX_INPUT_SIZE, stdin) == NULL) {
+    //         break;
+    //     }
 
-        char recipient[64];
-        printf("Enter recipient: ");
-        fgets(recipient, 64, stdin);
-        recipient[strcspn(recipient, "\n")] = 0;
+    //     char recipient[64];
+    //     printf("Enter recipient: ");
+    //     fgets(recipient, 64, stdin);
+    //     recipient[strcspn(recipient, "\n")] = 0;
 
-        Chat__Message message = CHAT__MESSAGE__INIT;
-        message.message_private = 1;
-        message.message_destination = recipient;
-        message.message_content = input;
-        message.message_sender = username; // Replace this with the actual sender's username
+    //     Chat__Message message = CHAT__MESSAGE__INIT;
+    //     message.message_private = 1;
+    //     message.message_destination = recipient;
+    //     message.message_content = input;
+    //     message.message_sender = username; // Replace this with the actual sender's username
 
-        Chat__UserOption user_option = CHAT__USER_OPTION__INIT;
-        user_option.op = 5;
-        user_option.message = &message;
+    //     Chat__UserOption user_option = CHAT__USER_OPTION__INIT;
+    //     user_option.op = 5;
+    //     user_option.message = &message;
 
-        uint8_t buffer[BUFFER_SIZE];
-        size_t message_len = chat__user_option__get_packed_size(&user_option);
-        chat__user_option__pack(&user_option, buffer);
+    //     uint8_t buffer[BUFFER_SIZE];
+    //     size_t message_len = chat__user_option__get_packed_size(&user_option);
+    //     chat__user_option__pack(&user_option, buffer);
 
-        send(sock, buffer, message_len, 0);
-    }
+    //     send(sock, buffer, message_len, 0);
+    // }
 
     close(sock);
 
