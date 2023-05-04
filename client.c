@@ -143,7 +143,6 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    printf("Conectado al server");
 
     ChatSistOS__NewUser registration_user = CHAT_SIST_OS__NEW_USER__INIT;
     registration_user.username = username;
@@ -188,72 +187,125 @@ int main(int argc, char *argv[]) {
     while(user_option != 7){
         menuMessage();
         scanf("%d", &user_option);
-        switch (user_option)
-        {
-        case 1:
-            char message_content[BUFFER_SIZE];
+        switch (user_option){
+            case 1:{
+                char message_content[BUFFER_SIZE];
 
-            printf("Write the message: ");
-            scanf(" %[^\n]", message_content);
-            printf("\n Message from: %s to: %s: %s", username, "ALL", message_content);
+                printf("Write the message: ");
+                scanf(" %[^\n]", message_content);
+                printf("\n Message from: %s to: %s: %s", username, "ALL", message_content);
 
-            ChatSistOS__Message user_message = CHAT_SIST_OS__MESSAGE__INIT;
-            user_message.message_content = message_content;
-            user_message.message_private = '0';
-            user_message.message_destination = "";
-            user_message.message_sender = username;
+                ChatSistOS__Message user_message = CHAT_SIST_OS__MESSAGE__INIT;
+                user_message.message_content = message_content;
+                user_message.message_private = '0';
+                user_message.message_destination = "";
+                user_message.message_sender = username;
 
-            ChatSistOS__UserOption user_option_new = CHAT_SIST_OS__USER_OPTION__INIT;
-            user_option_new.op = user_option;
-            user_option_new.message = &user_message;
+                ChatSistOS__UserOption user_option_new = CHAT_SIST_OS__USER_OPTION__INIT;
+                user_option_new.op = user_option;
+                user_option_new.message = &user_message;
 
-            size_t serialized_size_option = chat_sist_os__user_option__get_packed_size(&user_option_new);
-            uint8_t *buffer_option = malloc(serialized_size_option);
-            chat_sist_os__user_option__pack(&user_option_new, buffer_option);
-            
-            if (send(sock, buffer_option, serialized_size_option, 0) < 0) {
-                perror("MESSAGE ERROR");
-                exit(1);
+                size_t serialized_size_option = chat_sist_os__user_option__get_packed_size(&user_option_new);
+                uint8_t *buffer_option = malloc(serialized_size_option);
+                chat_sist_os__user_option__pack(&user_option_new, buffer_option);
+                
+                if (send(sock, buffer_option, serialized_size_option, 0) < 0) {
+                    perror("MESSAGE ERROR");
+                    exit(1);
+                }
+
+                free(buffer_option);
+
+                break;
             }
+            case 2:
+                char message_content[BUFFER_SIZE];
+                char user_destination[BUFFER_SIZE];
 
-            free(buffer_option);
+                printf("Write the message: ");
+                scanf(" %[^\n]", message_content);
+                printf("Write the user destination: ");
+                scanf(" %[^\n]", user_destination);
+                printf("\n Message from: %s to: %s: %s", username, user_destination, message_content);
 
-            break;
-        case 2:
-            char message_content[BUFFER_SIZE];
-            char user_destination[BUFFER_SIZE];
+                ChatSistOS__Message user_message = CHAT_SIST_OS__MESSAGE__INIT;
+                user_message.message_content = message_content;
+                user_message.message_private = '1';
+                user_message.message_destination = user_destination;
+                user_message.message_sender = username;
 
-            printf("Write the message: ");
-            scanf(" %[^\n]", message_content);
-            printf("Write the user destination: ");
-            scanf(" %[^\n]", user_destination);
-            printf("\n Message from: %s to: %s: %s", username, user_destination, message_content);
+                ChatSistOS__UserOption user_option_new = CHAT_SIST_OS__USER_OPTION__INIT;
+                user_option_new.op = user_option;
+                user_option_new.message = &user_message;
 
-            ChatSistOS__Message user_message = CHAT_SIST_OS__MESSAGE__INIT;
-            user_message.message_content = message_content;
-            user_message.message_private = '1';
-            user_message.message_destination = user_destination;
-            user_message.message_sender = username;
+                size_t serialized_size_option = chat_sist_os__user_option__get_packed_size(&user_option_new);
+                uint8_t *buffer_option = malloc(serialized_size_option);
+                chat_sist_os__user_option__pack(&user_option_new, buffer_option);
+                
+                if (send(sock, buffer_option, serialized_size_option, 0) < 0) {
+                    perror("MESSAGE ERROR");
+                    exit(1);
+                }
 
-            ChatSistOS__UserOption user_option_new = CHAT_SIST_OS__USER_OPTION__INIT;
-            user_option_new.op = user_option;
-            user_option_new.message = &user_message;
+                free(buffer_option);
 
-            size_t serialized_size_option = chat_sist_os__user_option__get_packed_size(&user_option_new);
-            uint8_t *buffer_option = malloc(serialized_size_option);
-            chat_sist_os__user_option__pack(&user_option_new, buffer_option);
-            
-            if (send(sock, buffer_option, serialized_size_option, 0) < 0) {
-                perror("MESSAGE ERROR");
-                exit(1);
-            }
+                break;
+            case 3:
 
-            free(buffer_option);
+                int option;
+                int status;
 
-            break;
-        
-        default:
-            break;
+                printf("Choose an option:\n");
+                printf("1. Activen");
+                printf("2. Busy\n");
+                printf("3. Inactiven");
+                scanf(" %d", &option);
+
+                ChatSistOS__Status user_status              = CHAT_SIST_OS__STATUS__INIT;
+                user_status.user_name                   = username;
+                user_status.user_state                  = status;
+                
+                ChatSistOS__UserOption opcion_escogida    = CHAT_SIST_OS__USER_OPTION__INIT;
+                opcion_escogida.op                  = user_option;
+                opcion_escogida.status              = &status;
+
+                size_t serialized_size_option = chat_sist_os__user_option__get_packed_size(&user_option_new);
+                uint8_t *buffer_option = malloc(serialized_size_option);
+                chat_sist_os__user_option__pack(&user_option_new, buffer_option);
+
+
+                if (send(sock, buffer_option, serialized_size_option, 0) < 0) {
+                    perror("MESSAGE ERROR");
+                    exit(1);
+                }
+
+                free(buffer_option);
+                break;
+
+            case 4:
+                char connectedUsers = 0;
+
+                ChatSistOS__UserList users_list   = CHAT_SIST_OS__USER_LIST__INIT;
+                users_list.list =   '1';
+
+                ChatSistOS__UserOption opcion_escogida    = CHAT_SIST_OS__USER_OPTION__INIT;
+                opcion_escogida.op                  = user_option;
+                opcion_escogida.userlist            = &users_list;
+
+                size_t serialized_size_option = chat_sist_os__user_option__get_packed_size(&user_option_new);
+                uint8_t *buffer_option = malloc(serialized_size_option);
+                chat_sist_os__user_option__pack(&user_option_new, buffer_option);
+
+
+                if (send(sock, buffer_option, serialized_size_option, 0) < 0) {
+                    perror("MESSAGE ERROR");
+                    exit(1);
+                }
+
+                free(buffer_option);
+                break;
+            default:
+                break;
         }
     }
     close(sock);

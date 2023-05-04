@@ -135,7 +135,6 @@ void * handle_client(void * arg) {
         // Liberar los buffers y el mensaje
         free(server_buffer_registro);
     } else {
-        printf("NEL");
         server_response_registro.op = 0;
         server_response_registro.response_status_code = 200;
         server_response_registro.response_message = "USER ALREADY REGISTERED";
