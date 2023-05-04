@@ -80,7 +80,6 @@ void* serverResponse(void* args){
 
         switch (option){
             case 1:
-                printf("HOLA");
                 if(server_response -> response_status_code == 200){
                     ChatSistOS__Message *message_received = server_response -> message;
                     printf("\n Message from: %s to: %s: %s", message_received -> message_sender, "ALL", message_received -> message_content);
@@ -89,19 +88,19 @@ void* serverResponse(void* args){
             case 2:
                 if(server_response -> response_status_code == 200){
                     ChatSistOS__Message *message_received = server_response -> message;
-                    printf("\n Message from: %s to: %s: %s", message_received -> message_sender, "ALL", message_received -> message_content);
+                    printf("\n Message from: %s to: %s: %s", message_received -> message_sender,  message_received -> message_destination, message_received -> message_content);
                 }
                 break;
             case 3:
-                if(server_response -> response_status_code == 200){
-                    ChatSistOS__Message *message_received = server_response -> message;
-                    printf("\n Message from: %s to: %s: %s", message_received -> message_sender, "ALL", message_received -> message_content);
-                }
                 break;
             case 4:
-                if(server_response -> response_status_code == 200){
-                    ChatSistOS__Message *message_received = server_response -> message;
-                    printf("\n Message from: %s to: %s: %s", message_received -> message_sender, "ALL", message_received -> message_content);
+                ChatSistOS__UsersOnline *user_online = server_response->users_online;
+                for (int i = 0; i < user_online->n_users; i++)
+                {
+                    ChatSistOS__User *user = user_online->users[i];
+                    char status[40];
+                    strcpy(status, userStatus(user->user_state));
+                    printf("User -> [%s] | Status -> [%s]\n\n", user->user_name, status);
                 }
                 break;
             default:
@@ -218,7 +217,7 @@ int main(int argc, char *argv[]) {
 
                 break;
             }
-            case 2:
+            case 2:{
                 char message_content[BUFFER_SIZE];
                 char user_destination[BUFFER_SIZE];
 
@@ -250,24 +249,26 @@ int main(int argc, char *argv[]) {
                 free(buffer_option);
 
                 break;
-            case 3:
+            }
+            case 3:{
 
                 int option;
                 int status;
 
                 printf("Choose an option:\n");
-                printf("1. Activen");
+                printf("1. Active\n");
                 printf("2. Busy\n");
-                printf("3. Inactiven");
+                printf("3. Inactive\n");
                 scanf(" %d", &option);
 
                 ChatSistOS__Status user_status              = CHAT_SIST_OS__STATUS__INIT;
                 user_status.user_name                   = username;
                 user_status.user_state                  = status;
                 
-                ChatSistOS__UserOption opcion_escogida    = CHAT_SIST_OS__USER_OPTION__INIT;
-                opcion_escogida.op                  = user_option;
-                opcion_escogida.status              = &status;
+                ChatSistOS__UserOption user_option_new = CHAT_SIST_OS__USER_OPTION__INIT;
+                user_option_new.op = user_option;
+                user_option_new.status = &user_status;
+
 
                 size_t serialized_size_option = chat_sist_os__user_option__get_packed_size(&user_option_new);
                 uint8_t *buffer_option = malloc(serialized_size_option);
@@ -281,16 +282,16 @@ int main(int argc, char *argv[]) {
 
                 free(buffer_option);
                 break;
-
-            case 4:
+            }
+            case 4:{
                 char connectedUsers = 0;
 
                 ChatSistOS__UserList users_list   = CHAT_SIST_OS__USER_LIST__INIT;
                 users_list.list =   '1';
 
-                ChatSistOS__UserOption opcion_escogida    = CHAT_SIST_OS__USER_OPTION__INIT;
-                opcion_escogida.op                  = user_option;
-                opcion_escogida.userlist            = &users_list;
+                ChatSistOS__UserOption user_option_new   = CHAT_SIST_OS__USER_OPTION__INIT;
+                user_option_new.op                  = user_option;
+                user_option_new.userlist            = &users_list;
 
                 size_t serialized_size_option = chat_sist_os__user_option__get_packed_size(&user_option_new);
                 uint8_t *buffer_option = malloc(serialized_size_option);
@@ -304,6 +305,7 @@ int main(int argc, char *argv[]) {
 
                 free(buffer_option);
                 break;
+            }
             default:
                 break;
         }
