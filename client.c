@@ -17,7 +17,7 @@
 int sock = 0;
 
 void menuMessage(){
-    printf("MENU\n");
+    printf("\nMENU\n");
     printf("Tiene las siguientes opciones:\n");
     printf("1. Enviar mensaje de todos los usuarios\n");
     printf("2. Enviar mensaje directo\n");
@@ -80,6 +80,7 @@ void* serverResponse(void* args){
 
         switch (option){
             case 1:
+                printf("HOLA");
                 if(server_response -> response_status_code == 200){
                     ChatSistOS__Message *message_received = server_response -> message;
                     printf("\n Message from: %s to: %s: %s", message_received -> message_sender, "ALL", message_received -> message_content);
@@ -209,6 +210,45 @@ int main(int argc, char *argv[]) {
             size_t serialized_size_option = chat_sist_os__user_option__get_packed_size(&user_option_new);
             uint8_t *buffer_option = malloc(serialized_size_option);
             chat_sist_os__user_option__pack(&user_option_new, buffer_option);
+            
+            if (send(sock, buffer_option, serialized_size_option, 0) < 0) {
+                perror("MESSAGE ERROR");
+                exit(1);
+            }
+
+            free(buffer_option);
+
+            break;
+        case 2:
+            char message_content[BUFFER_SIZE];
+            char user_destination[BUFFER_SIZE];
+
+            printf("Write the message: ");
+            scanf(" %[^\n]", message_content);
+            printf("Write the user destination: ");
+            scanf(" %[^\n]", user_destination);
+            printf("\n Message from: %s to: %s: %s", username, user_destination, message_content);
+
+            ChatSistOS__Message user_message = CHAT_SIST_OS__MESSAGE__INIT;
+            user_message.message_content = message_content;
+            user_message.message_private = '1';
+            user_message.message_destination = user_destination;
+            user_message.message_sender = username;
+
+            ChatSistOS__UserOption user_option_new = CHAT_SIST_OS__USER_OPTION__INIT;
+            user_option_new.op = user_option;
+            user_option_new.message = &user_message;
+
+            size_t serialized_size_option = chat_sist_os__user_option__get_packed_size(&user_option_new);
+            uint8_t *buffer_option = malloc(serialized_size_option);
+            chat_sist_os__user_option__pack(&user_option_new, buffer_option);
+            
+            if (send(sock, buffer_option, serialized_size_option, 0) < 0) {
+                perror("MESSAGE ERROR");
+                exit(1);
+            }
+
+            free(buffer_option);
 
             break;
         
@@ -216,6 +256,6 @@ int main(int argc, char *argv[]) {
             break;
         }
     }
-
+    close(sock);
     return 0;
 }
