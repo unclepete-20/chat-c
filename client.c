@@ -284,14 +284,16 @@ int main(int argc, char *argv[]) {
                 break;
             }
             case 4:{
-                char connectedUsers = 0;
+                {
+                    char connectedUsers = 0;
+                }
 
-                ChatSistOS__UserList users_list   = CHAT_SIST_OS__USER_LIST__INIT;
-                users_list.list =   '1';
+                ChatSistOS__UserList lista_usuarios   = CHAT_SIST_OS__USER_LIST__INIT;
+                lista_usuarios.list =   '1';
 
-                ChatSistOS__UserOption user_option_new   = CHAT_SIST_OS__USER_OPTION__INIT;
+                ChatSistOS__UserOption user_option_new    = CHAT_SIST_OS__USER_OPTION__INIT;
                 user_option_new.op                  = user_option;
-                user_option_new.userlist            = &users_list;
+                user_option_new.userlist            = &lista_usuarios;
 
                 size_t serialized_size_option = chat_sist_os__user_option__get_packed_size(&user_option_new);
                 uint8_t *buffer_option = malloc(serialized_size_option);
