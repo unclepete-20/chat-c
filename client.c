@@ -187,6 +187,34 @@ int main(int argc, char *argv[]) {
     while(user_option != 7){
         menuMessage();
         scanf("%d", &user_option);
+        switch (user_option)
+        {
+        case 1:
+            char message_content[BUFFER_SIZE];
+
+            printf("Write the message: ");
+            scanf(" %[^\n]", message_content);
+            printf("\n Message from: %s to: %s: %s", username, "ALL", message_content);
+
+            ChatSistOS__Message user_message = CHAT_SIST_OS__MESSAGE__INIT;
+            user_message.message_content = message_content;
+            user_message.message_private = '0';
+            user_message.message_destination = "";
+            user_message.message_sender = username;
+
+            ChatSistOS__UserOption user_option_new = CHAT_SIST_OS__USER_OPTION__INIT;
+            user_option_new.op = user_option;
+            user_option_new.message = &user_message;
+
+            size_t serialized_size_option = chat_sist_os__user_option__get_packed_size(&user_option_new);
+            uint8_t *buffer_option = malloc(serialized_size_option);
+            chat_sist_os__user_option__pack(&user_option_new, buffer_option);
+
+            break;
+        
+        default:
+            break;
+        }
     }
 
     return 0;
