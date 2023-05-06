@@ -1,3 +1,8 @@
+// Proyecto Chat
+// Sistemas Operativos
+// Oscar Fernando Lopez Barrios
+// Pedro Pablo Arriola Jimenez
+
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <pthread.h>
@@ -9,8 +14,6 @@
 #include "chat.pb-c.h"
 #include <ifaddrs.h>
 
-//#define SERVER_IP "127.0.0.1"
-//#define PORT 9001
 #define BUFFER_SIZE 1024
 #define MAX_INPUT_SIZE 256
 

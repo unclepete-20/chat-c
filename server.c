@@ -1,3 +1,8 @@
+// Proyecto Chat
+// Sistemas Operativos
+// Oscar Fernando Lopez Barrios
+// Pedro Pablo Arriola Jimenez
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,10 +24,12 @@ typedef struct {
     time_t last_active;
 }
 User;
+
 // Constantes de usuario
 #define MAX_USERS 100
 User userList[MAX_USERS];
 int numUsers = 0;
+
 // Permite ingresar un nuevo usuario al servicio
 void addUser(char * username, char * ip, int socketFD, int status) {
     if (numUsers >= MAX_USERS) {
@@ -45,13 +52,13 @@ void removeUser(char * username, char * ip, int socketFD, int status) {
     for (i = 0; i < numUsers; i++) {
         User user = userList[i];
         if (strcmp(user.username, username) == 0 && strcmp(user.ip, ip) == 0 && user.socketFD == socketFD) {
-        // Encontró el usuario, lo elimina
-        for (j = i; j < numUsers - 1; j++) {
-            userList[j] = userList[j + 1];
-        }
-        numUsers--;
-        printf("USER ELIMINATED: %s\n", username);
-        return;
+            // Encontró el usuario, lo elimina
+            for (j = i; j < numUsers - 1; j++) {
+                userList[j] = userList[j + 1];
+            }
+            numUsers--;
+            printf("USER ELIMINATED: %s\n", username);
+            return;
         }
     }
     pthread_mutex_unlock( & lock);
@@ -63,7 +70,7 @@ int userExists(char * username) {
     pthread_mutex_lock( & lock);
     for (i = 0; i < numUsers; i++) {
         if (strcmp(userList[i].username, username) == 0) {
-        return 1; // El usuario ya existe en la lista
+            return 1; // El usuario ya existe en la lista
         }
     }
     pthread_mutex_unlock( & lock);
@@ -76,11 +83,11 @@ void * check_inactive_users(void * arg) {
         time_t current_time = time(NULL);
         printf("________________TIME-ON-SERVER-(INFO)_______________________\n");
         for (int i = 0; i < numUsers; i++) {
-        double elapsed_time = difftime(current_time, userList[i].last_active);
-        printf("User: %s, Elapsed Time: %.0f\n", userList[i].username, elapsed_time);
-        if (elapsed_time >= 60) {
-            userList[i].status = 3;
-        }
+            double elapsed_time = difftime(current_time, userList[i].last_active);
+            printf("User: %s, Elapsed Time: %.0f\n", userList[i].username, elapsed_time);
+            if (elapsed_time >= 60) {
+                userList[i].status = 3;
+            }
         }
         sleep(15);
     }
@@ -129,8 +136,8 @@ void * handle_client(void * arg) {
         chat_sist_os__answer__pack( & server_response_registro, server_buffer_registro);
         // Enviar el buffer de respuesta a través del socket
         if (send(MyInfo.socketFD, server_buffer_registro, serialized_size_servidor_registro, 0) < 0) {
-        perror("UNABLE TO SEND RESPONSE");
-        exit(1);
+            perror("UNABLE TO SEND RESPONSE");
+            exit(1);
         }
         // Liberar los buffers y el mensaje
         free(server_buffer_registro);
@@ -144,8 +151,8 @@ void * handle_client(void * arg) {
         chat_sist_os__answer__pack( & server_response_registro, server_buffer_registro);
         // Enviar el buffer de respuesta a través del socket
         if (send(MyInfo.socketFD, server_buffer_registro, serialized_size_servidor_registro, 0) < 0) {
-        perror("UNABLE TO SEND RESPONSE");
-        exit(1);
+            perror("UNABLE TO SEND RESPONSE");
+            exit(1);
         }
         // Liberar los buffers y el mensaje
         free(server_buffer_registro);
@@ -158,45 +165,176 @@ void * handle_client(void * arg) {
         uint8_t recv_buffer_opcion[BUFFER_SIZE];
         ssize_t recv_size_opcion = recv(client_socket, recv_buffer_opcion, sizeof(recv_buffer_opcion), 0);
         if (recv_size_opcion < 0) {
-        perror("UNABLE TO RECEIVE CLIENT'S MESSAGE");
-        exit(1);
+            perror("UNABLE TO RECEIVE CLIENT'S MESSAGE");
+            exit(1);
         }
         if (recv_size_opcion == 0) {
-        perror("CLIENT DISCONNECTED");
-        goto exit_chat;
+            perror("CLIENT DISCONNECTED");
+            goto exit_chat;
         }
         // Deserializar la opcion elegida del cliente
         ChatSistOS__UserOption * client_option = chat_sist_os__user_option__unpack(NULL, recv_size_opcion, recv_buffer_opcion);
         if (client_option == NULL) {
-        fprintf(stderr, "UNABLE TO UNPACK CONTENT\n");
-        exit(1);
+            fprintf(stderr, "UNABLE TO UNPACK CONTENT\n");
+            exit(1);
         }
         int selected_option = client_option -> op;
         printf("[%s] CHOSE ==> [%d]", MyInfo.username, selected_option);
         switch (selected_option){
-        case 1:
-            printf("\n\n");
-            ChatSistOS__Message *received_message = client_option->message;
+            case 1:
+                printf("\n\n");
+                ChatSistOS__Message *received_message = client_option->message;
 
-            // Recorrer la lista de usuarios
-            for (int i = 0; i < numUsers; i++)
-            {
-                if (strcmp(userList[i].username, MyInfo.username) == 0)
-                {
-                    // revisar si el usuario esta inactivo en este caso activarlo como activo
-                    if (userList[i].status == 3)
-                    {
-                        userList[i].status = 1;
+                for (int i = 0; i < numUsers; i++){
+                    if (strcmp(userList[i].username, MyInfo.username) == 0){
+                        if (userList[i].status == 3){
+                            userList[i].status = 1;
+                        }
+                        userList[i].last_active = time(NULL);
+                        continue;
                     }
 
-                    userList[i].last_active = time(NULL);
-                    continue;
+                    ChatSistOS__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
+                    server_response.op = 1;
+                    server_response.response_status_code = 200;
+                    server_response.message = received_message;
+
+                    // Serializar la respuesta en un buffer
+                    size_t serialized_size_servidor = chat_sist_os__answer__get_packed_size(&server_response);
+                    uint8_t *buffer_servidor = malloc(serialized_size_servidor);
+                    chat_sist_os__answer__pack(&server_response, buffer_servidor);
+
+                    // Enviar el buffer de respuesta a través del socket
+                    if (send(userList[i].socketFD, buffer_servidor, serialized_size_servidor, 0) < 0){
+                        perror("Error al enviar la respuesta");
+                        exit(1);
+                    }
+
+                    // Liberar los buffers y el mensaje
+                    free(buffer_servidor);
+                }
+                break;
+
+            case 2:
+
+                printf("\n\n");
+                ChatSistOS__Message *direct_message = client_option->message;
+
+                // Recorrer la lista de usuarios
+                int enviar_mensaje = 0;
+                int indice_usuario = 0;
+                for (int i = 0; i < numUsers; i++){
+                    if (strcmp(userList[i].username, direct_message->message_destination) == 0){
+                        // revisar si el usuario esta inactivo en este caso activarlo como activo
+                        if (userList[i].status == 3){
+                            userList[i].status = 1;
+                        }
+                        userList[i].last_active = time(NULL);
+                        enviar_mensaje = 1;
+                        indice_usuario = i;
+                    }
                 }
 
+                if (enviar_mensaje == 1){
+                    // Si el usuario se encuentra
+                    ChatSistOS__Answer respuesta_servidor = CHAT_SIST_OS__ANSWER__INIT;
+                    respuesta_servidor.op = 2;
+                    respuesta_servidor.response_status_code = 200;
+                    respuesta_servidor.message = direct_message;
+
+                    // Serializar la respuesta en un buffer
+                    size_t serialized_size_servidor = chat_sist_os__answer__get_packed_size(&respuesta_servidor);
+                    uint8_t *buffer_servidor = malloc(serialized_size_servidor);
+                    chat_sist_os__answer__pack(&respuesta_servidor, buffer_servidor);
+
+                    // Enviar el buffer de respuesta a través del socket
+                    if (send(userList[indice_usuario].socketFD, buffer_servidor, serialized_size_servidor, 0) < 0){
+                        perror("Error al enviar la respuesta");
+                        exit(1);
+                    }
+
+                    // Liberar los buffers y el mensaje
+                    free(buffer_servidor);
+                }
+                else{
+
+                    // Si el usuario no se encuentra
+                    ChatSistOS__Answer respuesta_servidor = CHAT_SIST_OS__ANSWER__INIT;
+                    respuesta_servidor.op = 2;
+                    respuesta_servidor.response_status_code = 400;
+                    respuesta_servidor.response_message = "USUARIO NO ENCONTRADO";
+                    respuesta_servidor.message = direct_message;
+
+                    // Serializar la respuesta en un buffer
+                    size_t serialized_size_servidor = chat_sist_os__answer__get_packed_size(&respuesta_servidor);
+                    uint8_t *buffer_servidor = malloc(serialized_size_servidor);
+                    chat_sist_os__answer__pack(&respuesta_servidor, buffer_servidor);
+
+                    // Enviar el buffer de respuesta a través del socket
+                    if (send(MyInfo.socketFD, buffer_servidor, serialized_size_servidor, 0) < 0){
+                        perror("Error al enviar la respuesta");
+                        exit(1);
+                    }
+
+                    // Liberar los buffers y el mensaje
+                    free(buffer_servidor);
+                }
+                break;
+
+            case 3:
+                // Lógica para manejar la opción 3
+                    printf("\n\n");
+                    ChatSistOS__Status *estatus_recibido = client_option->status;
+                    // Recorrer la lista de usuarios
+                    for (int i = 0; i < numUsers; i++) {
+                        if (strcmp(userList[i].username, MyInfo.username) == 0){
+                            // revisar si el usuario esta inactivo en este caso activarlo como activo
+                            if (userList[i].status == 3){
+                                userList[i].status = 1;
+                            }
+                            // Si el usuario se llama Gabriel, cambiar su estado
+                            userList[i].last_active = time(NULL);
+                            userList[i].status = estatus_recibido->user_state;
+
+                            ChatSistOS__Answer respuesta_servidor          = CHAT_SIST_OS__ANSWER__INIT;
+                            respuesta_servidor.op   =   3 ;
+                            respuesta_servidor.response_status_code = 200;
+                            respuesta_servidor.response_message = "\nStatus changed succesfully";
+                        }
+                    }
+                break;
+
+            case 4:
+                printf("\n\n");
+
+                //Usuarios online
+                ChatSistOS__UsersOnline usuarios_conectados = CHAT_SIST_OS__USERS_ONLINE__INIT;
+                usuarios_conectados.n_users = numUsers;
+                usuarios_conectados.users   = malloc(sizeof(ChatSistOS__User *) * numUsers);
+
+                for (int i = 0; i < numUsers; i++){
+                    if (strcmp(userList[i].username, MyInfo.username) == 0){
+                        // revisar si el usuario esta inactivo en este caso activarlo como activo
+                        if (userList[i].status == 3){
+                            userList[i].status = 1;
+                        }
+                        userList[i].last_active = time(NULL);
+                    }
+                    ChatSistOS__User *new_user = malloc(sizeof(ChatSistOS__User));
+                    chat_sist_os__user__init(new_user);
+                    new_user->user_name = userList[i].username;
+                    new_user->user_state = userList[i].status;
+                    new_user->user_ip = userList[i].ip;
+
+                    usuarios_conectados.users[i] = new_user;
+                }
+
+                // Answer del servidor
                 ChatSistOS__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
-                server_response.op = 1;
+                server_response.op = 4;
                 server_response.response_status_code = 200;
-                server_response.message = received_message;
+                server_response.response_message = "Lista de usuarios Conectados";
+                server_response.users_online = &usuarios_conectados;
 
                 // Serializar la respuesta en un buffer
                 size_t serialized_size_servidor = chat_sist_os__answer__get_packed_size(&server_response);
@@ -204,159 +342,14 @@ void * handle_client(void * arg) {
                 chat_sist_os__answer__pack(&server_response, buffer_servidor);
 
                 // Enviar el buffer de respuesta a través del socket
-                if (send(userList[i].socketFD, buffer_servidor, serialized_size_servidor, 0) < 0)
-                {
+                if (send(MyInfo.socketFD, buffer_servidor, serialized_size_servidor, 0) < 0){
                     perror("Error al enviar la respuesta");
                     exit(1);
                 }
-
-                // Liberar los buffers y el mensaje
                 free(buffer_servidor);
-            }
+                break;
 
-            break;
-        case 2:
-
-            printf("\n\n");
-            ChatSistOS__Message *direct_message = client_option->message;
-
-            // Recorrer la lista de usuarios
-            int enviar_mensaje = 0;
-            int indice_usuario = 0;
-            for (int i = 0; i < numUsers; i++)
-            {
-                if (strcmp(userList[i].username, direct_message->message_destination) == 0)
-                {
-                    // revisar si el usuario esta inactivo en este caso activarlo como activo
-                    if (userList[i].status == 3){
-                        userList[i].status = 1;
-                    }
-                    userList[i].last_active = time(NULL);
-                    enviar_mensaje = 1;
-                    indice_usuario = i;
-                }
-            }
-
-            if (enviar_mensaje == 1)
-            {
-                // Si el usuario se encuentra
-                ChatSistOS__Answer respuesta_servidor = CHAT_SIST_OS__ANSWER__INIT;
-                respuesta_servidor.op = 2;
-                respuesta_servidor.response_status_code = 200;
-                respuesta_servidor.message = direct_message;
-
-                // Serializar la respuesta en un buffer
-                size_t serialized_size_servidor = chat_sist_os__answer__get_packed_size(&respuesta_servidor);
-                uint8_t *buffer_servidor = malloc(serialized_size_servidor);
-                chat_sist_os__answer__pack(&respuesta_servidor, buffer_servidor);
-
-                // Enviar el buffer de respuesta a través del socket
-                if (send(userList[indice_usuario].socketFD, buffer_servidor, serialized_size_servidor, 0) < 0)
-                {
-                    perror("Error al enviar la respuesta");
-                    exit(1);
-                }
-
-                // Liberar los buffers y el mensaje
-                free(buffer_servidor);
-            }
-            else
-            {
-
-                // Si el usuario no se encuentra
-                ChatSistOS__Answer respuesta_servidor = CHAT_SIST_OS__ANSWER__INIT;
-                respuesta_servidor.op = 2;
-                respuesta_servidor.response_status_code = 400;
-                respuesta_servidor.response_message = "USUARIO NO ENCONTRADO";
-                respuesta_servidor.message = direct_message;
-
-                // Serializar la respuesta en un buffer
-                size_t serialized_size_servidor = chat_sist_os__answer__get_packed_size(&respuesta_servidor);
-                uint8_t *buffer_servidor = malloc(serialized_size_servidor);
-                chat_sist_os__answer__pack(&respuesta_servidor, buffer_servidor);
-
-                // Enviar el buffer de respuesta a través del socket
-                if (send(MyInfo.socketFD, buffer_servidor, serialized_size_servidor, 0) < 0)
-                {
-                    perror("Error al enviar la respuesta");
-                    exit(1);
-                }
-
-                // Liberar los buffers y el mensaje
-                free(buffer_servidor);
-            }
-
-            break;
-        case 3:
-            // Lógica para manejar la opción 3
-                printf("\n\n");
-                ChatSistOS__Status *estatus_recibido = client_option->status;
-                // Recorrer la lista de usuarios
-                for (int i = 0; i < numUsers; i++) {
-                    if (strcmp(userList[i].username, MyInfo.username) == 0) {
-                        // revisar si el usuario esta inactivo en este caso activarlo como activo
-                        if (userList[i].status == 3){
-                            userList[i].status = 1;
-                        }
-                        // Si el usuario se llama Gabriel, cambiar su estado
-                        userList[i].last_active = time(NULL);
-                        userList[i].status = estatus_recibido->user_state;
-
-                        ChatSistOS__Answer respuesta_servidor          = CHAT_SIST_OS__ANSWER__INIT;
-                        respuesta_servidor.op   =   3 ;
-                        respuesta_servidor.response_status_code = 200;
-                        respuesta_servidor.response_message = "\nStatus changed succesfully";
-                    }
-                }
-            break;
-        case 4:
-            printf("\n\n");
-
-            //Usuarios online
-            ChatSistOS__UsersOnline usuarios_conectados = CHAT_SIST_OS__USERS_ONLINE__INIT;
-            usuarios_conectados.n_users = numUsers;
-            usuarios_conectados.users   = malloc(sizeof(ChatSistOS__User *) * numUsers);
-
-            for (int i = 0; i < numUsers; i++)
-            {
-                if (strcmp(userList[i].username, MyInfo.username) == 0) {
-                    // revisar si el usuario esta inactivo en este caso activarlo como activo
-                    if (userList[i].status == 3){
-                        userList[i].status = 1;
-                    }
-                    userList[i].last_active = time(NULL);
-                }
-                ChatSistOS__User *new_user = malloc(sizeof(ChatSistOS__User));
-                chat_sist_os__user__init(new_user);
-                new_user->user_name = userList[i].username;
-                new_user->user_state = userList[i].status;
-                new_user->user_ip = userList[i].ip;
-
-                usuarios_conectados.users[i] = new_user;
-            }
-
-            // Answer del servidor
-            ChatSistOS__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
-            server_response.op = 4;
-            server_response.response_status_code = 200;
-            server_response.response_message = "Lista de usuarios Conectados";
-            server_response.users_online = &usuarios_conectados;
-
-            // Serializar la respuesta en un buffer
-            size_t serialized_size_servidor = chat_sist_os__answer__get_packed_size(&server_response);
-            uint8_t *buffer_servidor = malloc(serialized_size_servidor);
-            chat_sist_os__answer__pack(&server_response, buffer_servidor);
-
-            // Enviar el buffer de respuesta a través del socket
-            if (send(MyInfo.socketFD, buffer_servidor, serialized_size_servidor, 0) < 0)
-            {
-                perror("Error al enviar la respuesta");
-                exit(1);
-            }
-            free(buffer_servidor);
-            break;
-        case 5:
-            {
+            case 5:
                 printf("\n\n");
                 int user_found = 0;
                 //Usuarios online
@@ -364,8 +357,7 @@ void * handle_client(void * arg) {
                 usuarios_conectados.n_users = numUsers;
                 usuarios_conectados.users   = malloc(sizeof(ChatSistOS__User *) * numUsers);
 
-                for (int i = 0; i < numUsers; i++)
-                {
+                for (int i = 0; i < numUsers; i++){
                     if (strcmp(userList[i].username, MyInfo.username) == 0) {
                         // revisar si el usuario esta inactivo en este caso activarlo como activo
                         if (userList[i].status == 3){
@@ -373,6 +365,7 @@ void * handle_client(void * arg) {
                         }
                         userList[i].last_active = time(NULL);
                     }
+
                     ChatSistOS__User *new_user = malloc(sizeof(ChatSistOS__User));
                     chat_sist_os__user__init(new_user);
                     ChatSistOS__User *empty = malloc(sizeof(ChatSistOS__User));
@@ -393,8 +386,8 @@ void * handle_client(void * arg) {
                 // Answer del servidor
                 ChatSistOS__Answer respuesta_servidor = CHAT_SIST_OS__ANSWER__INIT;
                 respuesta_servidor.op = 5;
-                if (user_found == 1)
-                {
+
+                if (user_found == 1){
                     respuesta_servidor.response_status_code = 200;
                 }else{
                     respuesta_servidor.response_status_code = 400;
@@ -416,32 +409,36 @@ void * handle_client(void * arg) {
                     exit(1);
                 }
                 free(buffer_servidor);
-            break;
-            }
-        case 6:
-            // Lógica para manejar la opción 6
-            for (int i = 0; i < numUsers; i++){
-                if (strcmp(userList[i].username, MyInfo.username) == 0) {
-                    // revisar si el usuario esta inactivo en este caso activarlo como activo
-                    if (userList[i].status == 3){
-                        userList[i].status = 1;
+                break;
+
+            case 6:
+                // Lógica para manejar la opción 6
+                for (int i = 0; i < numUsers; i++){
+                    if (strcmp(userList[i].username, MyInfo.username) == 0) {
+                        // revisar si el usuario esta inactivo en este caso activarlo como activo
+                        if (userList[i].status == 3){
+                            userList[i].status = 1;
+                        }
+                        userList[i].last_active = time(NULL);
                     }
-                    userList[i].last_active = time(NULL);
                 }
-            }
-            break;
-        case 7:
-            chat_sist_os__user_option__free_unpacked(client_option, NULL);
-            goto exit_chat;
-        default:
-            fprintf(stderr, "Opción no válida: %d\n", selected_option);
-            break;
+                break;
+
+            case 7:
+                chat_sist_os__user_option__free_unpacked(client_option, NULL);
+                goto exit_chat;
+
+            default:
+                fprintf(stderr, "Opción no válida: %d\n", selected_option);
+                break;
         }
         // Libera el desempaquetamiento
         chat_sist_os__user_option__free_unpacked(client_option, NULL);
     }
+
     exit_chat:
         removeUser(MyInfo.username, MyInfo.ip, MyInfo.socketFD, MyInfo.status);
+
     printf("\n\n ********** CONNECTED USERS **********\n");
     for (int i = 0; i < numUsers; i++) {
         printf("USER INFO #%d:\n", i + 1);
@@ -453,6 +450,8 @@ void * handle_client(void * arg) {
     }
     close(client_socket);
 }
+
+
 int main(int argc, char ** argv) {
     if (argc != 2) {
         printf("USE: %s <PORT>\n", argv[0]);
