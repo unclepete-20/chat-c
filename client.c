@@ -41,7 +41,7 @@ void helpMessage(){
 }
 
 char* userStatus(int status_value){
-    char* response;
+    char* response = malloc(sizeof(char) * 40);
     switch(status_value){
         case 1:
             strcpy(response, "ACTIVE");
@@ -104,7 +104,7 @@ void* serverResponse(void* args){
                 for (int i = 0; i < users_conected -> n_users; i++){
                     ChatSistOS__User *user = users_conected -> users[i];
                     char status[40];
-                    strcpy(status, estado(user -> user_state));
+                    strcpy(status, userStatus(user -> user_state));
                     printf("\n User: %s - Status: %s \n", user -> user_name, status);
                 }
                 break;
@@ -119,7 +119,7 @@ void* serverResponse(void* args){
                         {
                             printf("\n User Information: %s <<\n", user -> user_name);
                             char status[40];
-                            strcpy(status, estado(user->user_state));
+                            strcpy(status, userStatus(user->user_state));
                             printf("\n User: %s - Status: %s \n", user -> user_name, status);
                         }
                         

@@ -185,8 +185,9 @@ void * handle_client(void * arg) {
 
         int selected_option = client_option -> op;
         printf("[%s] CHOSE ==> [%d]", MyInfo.username, selected_option);
+
         switch (selected_option){
-            case 1:
+            case 1:{
                 ChatSistOS__Message *received_message = client_option->message;
 
                 for (int i = 0; i < numUsers; i++){
@@ -218,8 +219,8 @@ void * handle_client(void * arg) {
                     free(server_buffer);
                 }
                 break;
-
-            case 2:
+            }
+            case 2:{
 
                 ChatSistOS__Message *direct_message = client_option->message;
 
@@ -283,10 +284,9 @@ void * handle_client(void * arg) {
                     free(server_buffer);
                 }
                 break;
+            }
+            case 3:{
 
-            case 3:
-                // Lógica para manejar la opción 3
-                    printf("\n\n");
                     ChatSistOS__Status *estatus_recibido = client_option->status;
                     // Recorrer la lista de usuarios
                     for (int i = 0; i < numUsers; i++) {
@@ -306,8 +306,8 @@ void * handle_client(void * arg) {
                         }
                     }
                 break;
-
-            case 4:
+            }
+            case 4:{
                 printf("\n\n");
 
                 //Usuarios online
@@ -351,10 +351,10 @@ void * handle_client(void * arg) {
                 }
                 free(server_buffer);
                 break;
+            }
+            case 5:{
 
-            case 5:
-                printf("\n\n");
-                int user_found = 0;
+                int users_found = 0;
                 //Usuarios online
                 ChatSistOS__UsersOnline usuarios_conectados = CHAT_SIST_OS__USERS_ONLINE__INIT;
                 usuarios_conectados.n_users = numUsers;
@@ -379,7 +379,7 @@ void * handle_client(void * arg) {
                     new_user->user_ip = userList[i].ip;
                     if(strcmp(userList[i].username, client_option->userlist->user_name) == 0){
                         usuarios_conectados.users[i] = new_user;
-                        user_found = 1;
+                        users_found = 1;
                     }else{
                         usuarios_conectados.users[i] = empty;
                     }
@@ -390,7 +390,7 @@ void * handle_client(void * arg) {
                 ChatSistOS__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
                 server_response.op = 5;
 
-                if (user_found == 1){
+                if (users_found == 1){
                     server_response.response_status_code = 200;
                 }else{
                     server_response.response_status_code = 400;
@@ -413,9 +413,9 @@ void * handle_client(void * arg) {
                 }
                 free(server_buffer);
                 break;
+            }
+            case 6:{
 
-            case 6:
-                // Lógica para manejar la opción 6
                 for (int i = 0; i < numUsers; i++){
                     if (strcmp(userList[i].username, MyInfo.username) == 0) {
                         // revisar si el usuario esta inactivo en este caso activarlo como activo
@@ -426,16 +426,17 @@ void * handle_client(void * arg) {
                     }
                 }
                 break;
-
-            case 7:
+            }
+            case 7:{
                 chat_sist_os__user_option__free_unpacked(client_option, NULL);
                 goto exit_chat;
-
-            default:
+            }
+            default:{
                 fprintf(stderr, "Opción no válida: %d\n", selected_option);
                 break;
+            }
         }
-        // Libera el desempaquetamiento
+
         chat_sist_os__user_option__free_unpacked(client_option, NULL);
     }
 
