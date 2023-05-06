@@ -68,7 +68,7 @@ void* serverResponse(void* args){
         ssize_t size_recv = recv(socket, buffer_recv, sizeof(buffer_recv), 0);
 
         if(size_recv< 0){
-            perror("Response ERROR");
+            perror("RESPONSE ERROR");
             exit(1);
         }
 
@@ -97,15 +97,40 @@ void* serverResponse(void* args){
             case 3:
                 break;
             case 4:
-                ChatSistOS__UsersOnline *user_online = server_response->users_online;
-                for (int i = 0; i < user_online->n_users; i++)
-                {
-                    ChatSistOS__User *user = user_online->users[i];
+                printf("\n Users Connected \n");
+
+                ChatSistOS__UsersOnline *users_conected = server_response -> users_online;
+
+                for (int i = 0; i < users_conected -> n_users; i++){
+                    ChatSistOS__User *user = users_conected -> users[i];
                     char status[40];
-                    strcpy(status, userStatus(user->user_state));
-                    printf("User -> [%s] | Status -> [%s]\n\n", user->user_name, status);
+                    strcpy(status, estado(user -> user_state));
+                    printf("\n User: %s - Status: %s \n", user -> user_name, status);
                 }
                 break;
+
+            case 5:
+
+                if (server_response->response_status_code == 200){
+                    ChatSistOS__UsersOnline *users_conected = server_response -> users_online;
+                    for (int i = 0; i < users_conected -> n_users; i++){
+                        ChatSistOS__User *user = users_conected -> users[i];
+                        if (strcmp("Vacio", user -> user_name) != 0)
+                        {
+                            printf("\n User Information: %s <<\n", user -> user_name);
+                            char status[40];
+                            strcpy(status, estado(user->user_state));
+                            printf("\n User: %s - Status: %s \n", user -> user_name, status);
+                        }
+                        
+                        
+                    }
+                }
+                else{
+                    printf("\n\n >> No se ha encontrado al usuario\n\n");
+                }
+                break;
+
             default:
                 break;
         }
