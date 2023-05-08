@@ -178,7 +178,6 @@ void * handle_client(void * arg) {
             goto exit_chat;
         }
 
-        // Desempacar la opcion que el cliente eligio
         ChatSistOS__UserOption * client_option = chat_sist_os__user_option__unpack(NULL, recv_size_option, recv_buffer_option);
         if (client_option == NULL) {
             fprintf(stderr, "UNABLE TO UNPACK CONTENT\n");
@@ -207,18 +206,15 @@ void * handle_client(void * arg) {
                     server_response.response_status_code = 200;
                     server_response.message = received_message;
 
-                    // Serializar la respuesta en un buffer
                     size_t serialized_size_server = chat_sist_os__answer__get_packed_size(&server_response);
                     uint8_t *server_buffer = malloc(serialized_size_server);
                     chat_sist_os__answer__pack(&server_response, server_buffer);
 
-                    // Enviar el buffer de respuesta a través del socket
                     if (send(userList[i].socketFD, server_buffer, serialized_size_server, 0) < 0){
                         perror("RESPONSE ERROR");
                         exit(1);
                     }
 
-                    // Liberar los buffers y el mensaje
                     free(server_buffer);
                 }
                 break;
@@ -227,12 +223,10 @@ void * handle_client(void * arg) {
                 printf("\n");
                 ChatSistOS__Message *direct_message = client_option->message;
 
-                // Recorrer la lista de usuarios
                 int enviar_mensaje = 0;
                 int indice_usuario = 0;
                 for (int i = 0; i < numUsers; i++){
                     if (strcmp(userList[i].username, direct_message->message_destination) == 0){
-                        // revisar si el usuario esta inactivo en este caso activarlo como activo
                         if (userList[i].status == 3){
                             userList[i].status = 1;
                         }
@@ -243,47 +237,39 @@ void * handle_client(void * arg) {
                 }
 
                 if (enviar_mensaje == 1){
-                    // Si el usuario se encuentra
                     ChatSistOS__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
                     server_response.op = 2;
                     server_response.response_status_code = 200;
                     server_response.message = direct_message;
 
-                    // Serializar la respuesta en un buffer
                     size_t serialized_size_server = chat_sist_os__answer__get_packed_size(&server_response);
                     uint8_t *server_buffer = malloc(serialized_size_server);
                     chat_sist_os__answer__pack(&server_response, server_buffer);
 
-                    // Enviar el buffer de respuesta a través del socket
                     if (send(userList[indice_usuario].socketFD, server_buffer, serialized_size_server, 0) < 0){
                         perror("RESPONSE ERROR");
                         exit(1);
                     }
 
-                    // Liberar los buffers y el mensaje
                     free(server_buffer);
                 }
                 else{
 
-                    // Si el usuario no se encuentra
                     ChatSistOS__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
                     server_response.op = 2;
                     server_response.response_status_code = 400;
                     server_response.response_message = "USER NOT FIND";
                     server_response.message = direct_message;
 
-                    // Serializar la respuesta en un buffer
                     size_t serialized_size_server = chat_sist_os__answer__get_packed_size(&server_response);
                     uint8_t *server_buffer = malloc(serialized_size_server);
                     chat_sist_os__answer__pack(&server_response, server_buffer);
 
-                    // Enviar el buffer de respuesta a través del socket
                     if (send(MyInfo.socketFD, server_buffer, serialized_size_server, 0) < 0){
                         perror("RESPONSE ERROR");
                         exit(1);
                     }
 
-                    // Liberar los buffers y el mensaje
                     free(server_buffer);
                 }
                 break;
@@ -291,14 +277,11 @@ void * handle_client(void * arg) {
             case 3:{
                 printf("\n");
                 ChatSistOS__Status *estatus_recibido = client_option->status;
-                // Recorrer la lista de usuarios
                 for (int i = 0; i < numUsers; i++) {
                     if (strcmp(userList[i].username, MyInfo.username) == 0){
-                        // revisar si el usuario esta inactivo en este caso activarlo como activo
                         if (userList[i].status == 3){
                             userList[i].status = 1;
                         }
-                        // Cambiar el estado del usuario
                         userList[i].last_active = time(NULL);
                         userList[i].status = estatus_recibido->user_state;
 
@@ -341,12 +324,10 @@ void * handle_client(void * arg) {
                 server_response.response_message = "Lista de usuarios Conectados";
                 server_response.users_online = &users_connected;
 
-                // Serializar la respuesta en un buffer
                 size_t serialized_size_server = chat_sist_os__answer__get_packed_size(&server_response);
                 uint8_t *server_buffer = malloc(serialized_size_server);
                 chat_sist_os__answer__pack(&server_response, server_buffer);
 
-                // Enviar el buffer de respuesta a través del socket
                 if (send(MyInfo.socketFD, server_buffer, serialized_size_server, 0) < 0){
                     perror("RESPONSE ERROR");
                     exit(1);
@@ -356,7 +337,7 @@ void * handle_client(void * arg) {
             }
             case 5:{
                 printf("\n");
-                int users_found = 0;
+                int found_user = 0;
 
                 ChatSistOS__UsersOnline user_connected = CHAT_SIST_OS__USERS_ONLINE__INIT;
                 user_connected .n_users = numUsers;
@@ -364,7 +345,6 @@ void * handle_client(void * arg) {
 
                 for (int i = 0; i < numUsers; i++){
                     if (strcmp(userList[i].username, MyInfo.username) == 0) {
-                        // revisar si el usuario esta inactivo en este caso activarlo como activo
                         if (userList[i].status == 3){
                             userList[i].status = 1;
                         }
@@ -373,26 +353,26 @@ void * handle_client(void * arg) {
 
                     ChatSistOS__User *new_user = malloc(sizeof(ChatSistOS__User));
                     chat_sist_os__user__init(new_user);
-                    ChatSistOS__User *empty = malloc(sizeof(ChatSistOS__User));
-                    chat_sist_os__user__init(empty);
-                    empty->user_name = "Empty";
-                    new_user->user_name = userList[i].username;
-                    new_user->user_state = userList[i].status;
-                    new_user->user_ip = userList[i].ip;
-                    if(strcmp(userList[i].username, client_option->userlist->user_name) == 0){
+                    ChatSistOS__User *empty_user = malloc(sizeof(ChatSistOS__User));
+                    chat_sist_os__user__init(empty_user);
+                    empty_user -> user_name = "Empty";
+                    new_user -> user_name = userList[i].username;
+                    new_user -> user_state = userList[i].status;
+                    new_user -> user_ip = userList[i].ip;
+                    
+                    if(strcmp(userList[i].username, client_option -> userlist -> user_name) == 0){
                         user_connected .users[i] = new_user;
-                        users_found = 1;
+                        found_user = 1;
                     }else{
-                        user_connected.users[i] = empty;
+                        user_connected.users[i] = empty_user;
                     }
                     
                 }
 
-                // Answer del servidor
                 ChatSistOS__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
                 server_response.op = 5;
 
-                if (users_found == 1){
+                if (found_user == 1){
                     server_response.response_status_code = 200;
                 }else{
                     server_response.response_status_code = 400;

@@ -43,15 +43,18 @@ void helpMessage(){
 char* userStatus(int status_value){
     char* response = malloc(sizeof(char) * 40);
     switch(status_value){
-        case 1:
+        case 1:{
             strcpy(response, "ACTIVE");
             break;
-        case 2:
+        }
+        case 2:{
             strcpy(response, "INACTIVE");
             break;
-        case 3:
+        }
+        case 3:{
             strcpy(response, "BUSY");
             break;
+        }
         default:
             break;
     }
@@ -109,13 +112,13 @@ void* serverResponse(void* args){
                 }
                 break;
 
-            case 5:
+            case 5:{
 
-                if (server_response->response_status_code == 200){
+                if (server_response -> response_status_code == 200){
                     ChatSistOS__UsersOnline *users_conected = server_response -> users_online;
                     for (int i = 0; i < users_conected -> n_users; i++){
                         ChatSistOS__User *user = users_conected -> users[i];
-                        if (strcmp("Vacio", user -> user_name) != 0)
+                        if (strcmp("Empty", user -> user_name) != 0)
                         {
                             printf("\n User Information: %s <<\n", user -> user_name);
                             char status[40];
@@ -130,7 +133,7 @@ void* serverResponse(void* args){
                     printf("\n\n >> No se ha encontrado al usuario\n\n");
                 }
                 break;
-
+            }
             default:
                 break;
         }
@@ -281,7 +284,6 @@ int main(int argc, char *argv[]) {
             case 3:{
 
                 int option;
-                int status;
 
                 printf("Choose an option:\n");
                 printf("1. Active\n");
@@ -291,7 +293,7 @@ int main(int argc, char *argv[]) {
 
                 ChatSistOS__Status user_status              = CHAT_SIST_OS__STATUS__INIT;
                 user_status.user_name                   = username;
-                user_status.user_state                  = status;
+                user_status.user_state                  = option;
                 
                 ChatSistOS__UserOption user_option_new = CHAT_SIST_OS__USER_OPTION__INIT;
                 user_option_new.op = user_option;
