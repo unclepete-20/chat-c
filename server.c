@@ -95,6 +95,7 @@ void * check_inactive_users(void * arg) {
 }
 //Funcion que maneja las respuestas al cliente
 void * handle_client(void * arg) {
+
     int client_socket = * (int * ) arg;
     int client_in_session = 1;
     // Recibir el registro del cliente
@@ -123,6 +124,7 @@ void * handle_client(void * arg) {
 
     // Answer server
     ChatSistOS__Answer server_response_registro = CHAT_SIST_OS__ANSWER__INIT;
+
     if (MyInfo.username) {
         // Agregar usuario conectado a la lista de usuarios
         addUser(chat_registration -> username, chat_registration -> ip, client_socket, 1);
@@ -143,7 +145,7 @@ void * handle_client(void * arg) {
         free(server_buffer_registro);
     } else {
         server_response_registro.op = 0;
-        server_response_registro.response_status_code = 200;
+        server_response_registro.response_status_code = 400;
         server_response_registro.response_message = "USER ALREADY REGISTERED";
         // Serializar la respuesta en un buffer
         size_t serialized_size_servidor_registro = chat_sist_os__answer__get_packed_size( & server_response_registro);
@@ -158,26 +160,26 @@ void * handle_client(void * arg) {
         free(server_buffer_registro);
     }
     chat_sist_os__user_option__free_unpacked(user_registration, NULL);
-    //Escuchando useroptions recibidas
+
     printf("\n\n OPTION'S MENU ([%s])\n", MyInfo.username);
     while (1) {
 
         printf("\n");
         uint8_t recv_buffer_option[BUFFER_SIZE];
-        ssize_t recv_size_opcion = recv(client_socket, recv_buffer_option, sizeof(recv_buffer_option), 0);
+        ssize_t recv_size_option = recv(client_socket, recv_buffer_option, sizeof(recv_buffer_option), 0);
         
-        if (recv_size_opcion < 0) {
+        if (recv_size_option < 0) {
             perror("UNABLE TO RECEIVE CLIENT'S MESSAGE");
             exit(1);
         }
 
-        if (recv_size_opcion == 0) {
+        if (recv_size_option == 0) {
             perror("CLIENT DISCONNECTED");
             goto exit_chat;
         }
 
         // Desempacar la opcion que el cliente eligio
-        ChatSistOS__UserOption * client_option = chat_sist_os__user_option__unpack(NULL, recv_size_opcion, recv_buffer_option);
+        ChatSistOS__UserOption * client_option = chat_sist_os__user_option__unpack(NULL, recv_size_option, recv_buffer_option);
         if (client_option == NULL) {
             fprintf(stderr, "UNABLE TO UNPACK CONTENT\n");
             exit(1);
@@ -188,6 +190,7 @@ void * handle_client(void * arg) {
 
         switch (selected_option){
             case 1:{
+                printf("\n");
                 ChatSistOS__Message *received_message = client_option->message;
 
                 for (int i = 0; i < numUsers; i++){
@@ -221,7 +224,7 @@ void * handle_client(void * arg) {
                 break;
             }
             case 2:{
-
+                printf("\n");
                 ChatSistOS__Message *direct_message = client_option->message;
 
                 // Recorrer la lista de usuarios
@@ -286,58 +289,57 @@ void * handle_client(void * arg) {
                 break;
             }
             case 3:{
-
-                    ChatSistOS__Status *estatus_recibido = client_option->status;
-                    // Recorrer la lista de usuarios
-                    for (int i = 0; i < numUsers; i++) {
-                        if (strcmp(userList[i].username, MyInfo.username) == 0){
-                            // revisar si el usuario esta inactivo en este caso activarlo como activo
-                            if (userList[i].status == 3){
-                                userList[i].status = 1;
-                            }
-                            // Cambiar el estado del usuario
-                            userList[i].last_active = time(NULL);
-                            userList[i].status = estatus_recibido->user_state;
-
-                            ChatSistOS__Answer server_response          = CHAT_SIST_OS__ANSWER__INIT;
-                            server_response.op   =   3 ;
-                            server_response.response_status_code = 200;
-                            server_response.response_message = "\nStatus changed succesfully";
-                        }
-                    }
-                break;
-            }
-            case 4:{
-                printf("\n\n");
-
-                //Usuarios online
-                ChatSistOS__UsersOnline usuarios_conectados = CHAT_SIST_OS__USERS_ONLINE__INIT;
-                usuarios_conectados.n_users = numUsers;
-                usuarios_conectados.users   = malloc(sizeof(ChatSistOS__User *) * numUsers);
-
-                for (int i = 0; i < numUsers; i++){
+                printf("\n");
+                ChatSistOS__Status *estatus_recibido = client_option->status;
+                // Recorrer la lista de usuarios
+                for (int i = 0; i < numUsers; i++) {
                     if (strcmp(userList[i].username, MyInfo.username) == 0){
                         // revisar si el usuario esta inactivo en este caso activarlo como activo
                         if (userList[i].status == 3){
                             userList[i].status = 1;
                         }
+                        // Cambiar el estado del usuario
+                        userList[i].last_active = time(NULL);
+                        userList[i].status = estatus_recibido->user_state;
+
+                        ChatSistOS__Answer server_response          = CHAT_SIST_OS__ANSWER__INIT;
+                        server_response.op   =   3 ;
+                        server_response.response_status_code = 200;
+                        server_response.response_message = "\nStatus changed succesfully";
+                    }
+                }
+                break;
+            }
+            case 4:{
+                printf("\n\n");
+
+                ChatSistOS__UsersOnline users_connected = CHAT_SIST_OS__USERS_ONLINE__INIT;
+                users_connected.n_users = numUsers;
+                users_connected.users   = malloc(sizeof(ChatSistOS__User *) * numUsers);
+
+                for (int i = 0; i < numUsers; i++){
+                    if (strcmp(userList[i].username, MyInfo.username) == 0){
+
+                        if (userList[i].status == 3){
+                            userList[i].status = 1;
+                        }
                         userList[i].last_active = time(NULL);
                     }
+
                     ChatSistOS__User *new_user = malloc(sizeof(ChatSistOS__User));
                     chat_sist_os__user__init(new_user);
                     new_user->user_name = userList[i].username;
                     new_user->user_state = userList[i].status;
                     new_user->user_ip = userList[i].ip;
 
-                    usuarios_conectados.users[i] = new_user;
+                    users_connected.users[i] = new_user;
                 }
 
-                // Answer del servidor
                 ChatSistOS__Answer server_response = CHAT_SIST_OS__ANSWER__INIT;
                 server_response.op = 4;
                 server_response.response_status_code = 200;
                 server_response.response_message = "Lista de usuarios Conectados";
-                server_response.users_online = &usuarios_conectados;
+                server_response.users_online = &users_connected;
 
                 // Serializar la respuesta en un buffer
                 size_t serialized_size_server = chat_sist_os__answer__get_packed_size(&server_response);
@@ -353,12 +355,12 @@ void * handle_client(void * arg) {
                 break;
             }
             case 5:{
-
+                printf("\n");
                 int users_found = 0;
-                //Usuarios online
-                ChatSistOS__UsersOnline usuarios_conectados = CHAT_SIST_OS__USERS_ONLINE__INIT;
-                usuarios_conectados.n_users = numUsers;
-                usuarios_conectados.users   = malloc(sizeof(ChatSistOS__User *) * numUsers);
+
+                ChatSistOS__UsersOnline user_connected = CHAT_SIST_OS__USERS_ONLINE__INIT;
+                user_connected .n_users = numUsers;
+                user_connected .users   = malloc(sizeof(ChatSistOS__User *) * numUsers);
 
                 for (int i = 0; i < numUsers; i++){
                     if (strcmp(userList[i].username, MyInfo.username) == 0) {
@@ -373,15 +375,15 @@ void * handle_client(void * arg) {
                     chat_sist_os__user__init(new_user);
                     ChatSistOS__User *empty = malloc(sizeof(ChatSistOS__User));
                     chat_sist_os__user__init(empty);
-                    empty->user_name = "Vacio";
+                    empty->user_name = "Empty";
                     new_user->user_name = userList[i].username;
                     new_user->user_state = userList[i].status;
                     new_user->user_ip = userList[i].ip;
                     if(strcmp(userList[i].username, client_option->userlist->user_name) == 0){
-                        usuarios_conectados.users[i] = new_user;
+                        user_connected .users[i] = new_user;
                         users_found = 1;
                     }else{
-                        usuarios_conectados.users[i] = empty;
+                        user_connected.users[i] = empty;
                     }
                     
                 }
@@ -398,7 +400,7 @@ void * handle_client(void * arg) {
                 
 
                 server_response.response_message = "Lista de usuarios Conectados";
-                server_response.users_online = &usuarios_conectados;
+                server_response.users_online = &user_connected;
 
                 // Serializar la respuesta en un buffer
                 size_t serialized_size_server = chat_sist_os__answer__get_packed_size(&server_response);
@@ -415,7 +417,7 @@ void * handle_client(void * arg) {
                 break;
             }
             case 6:{
-
+                printf("\n");
                 for (int i = 0; i < numUsers; i++){
                     if (strcmp(userList[i].username, MyInfo.username) == 0) {
                         // revisar si el usuario esta inactivo en este caso activarlo como activo
