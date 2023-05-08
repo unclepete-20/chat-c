@@ -67,7 +67,7 @@ void* serverResponse(void* args){
 
     while(1){
 
-        uint8_t buffer_recv[BUFFER_SIZE];
+        uint8_t buffer_recv[MAX_INPUT_SIZE];
         ssize_t size_recv = recv(socket, buffer_recv, sizeof(buffer_recv), 0);
 
         if(size_recv< 0){
