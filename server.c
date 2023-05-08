@@ -48,7 +48,6 @@ void addUser(char * username, char * ip, int socketFD, int status) {
 // Permite eliminar un usuario del servicio
 void removeUser(char * username, char * ip, int socketFD, int status) {
     int i, j;
-    pthread_mutex_lock( & lock);
     for (i = 0; i < numUsers; i++) {
         User user = userList[i];
         if (strcmp(user.username, username) == 0 && strcmp(user.ip, ip) == 0 && user.socketFD == socketFD) {
@@ -61,7 +60,6 @@ void removeUser(char * username, char * ip, int socketFD, int status) {
             return;
         }
     }
-    pthread_mutex_unlock( & lock);
     printf("USER NOT REGISTERED: %s\n", username);
 }
 // Verifica existencia de un usuario
@@ -276,14 +274,14 @@ void * handle_client(void * arg) {
             }
             case 3:{
                 printf("\n");
-                ChatSistOS__Status *estatus_recibido = client_option->status;
+                ChatSistOS__Status *status_user = client_option -> status;
                 for (int i = 0; i < numUsers; i++) {
                     if (strcmp(userList[i].username, MyInfo.username) == 0){
                         if (userList[i].status == 3){
                             userList[i].status = 1;
                         }
                         userList[i].last_active = time(NULL);
-                        userList[i].status = estatus_recibido->user_state;
+                        userList[i].status = status_user -> user_state;
 
                         ChatSistOS__Answer server_response          = CHAT_SIST_OS__ANSWER__INIT;
                         server_response.op   =   3 ;
@@ -302,10 +300,6 @@ void * handle_client(void * arg) {
 
                 for (int i = 0; i < numUsers; i++){
                     if (strcmp(userList[i].username, MyInfo.username) == 0){
-
-                        if (userList[i].status == 3){
-                            userList[i].status = 1;
-                        }
                         userList[i].last_active = time(NULL);
                     }
 
@@ -359,7 +353,7 @@ void * handle_client(void * arg) {
                     new_user -> user_name = userList[i].username;
                     new_user -> user_state = userList[i].status;
                     new_user -> user_ip = userList[i].ip;
-                    
+
                     if(strcmp(userList[i].username, client_option -> userlist -> user_name) == 0){
                         user_connected .users[i] = new_user;
                         found_user = 1;
@@ -373,13 +367,13 @@ void * handle_client(void * arg) {
                 server_response.op = 5;
 
                 if (found_user == 1){
-                    server_response.response_status_code = 200;
-                }else{
                     server_response.response_status_code = 400;
+                }else{
+                    server_response.response_status_code = 200;
                 }
                 
 
-                server_response.response_message = "Lista de usuarios Conectados";
+                server_response.response_message = "Connected User List";
                 server_response.users_online = &user_connected;
 
                 // Serializar la respuesta en un buffer
@@ -394,19 +388,6 @@ void * handle_client(void * arg) {
                     exit(1);
                 }
                 free(server_buffer);
-                break;
-            }
-            case 6:{
-                printf("\n");
-                for (int i = 0; i < numUsers; i++){
-                    if (strcmp(userList[i].username, MyInfo.username) == 0) {
-                        // revisar si el usuario esta inactivo en este caso activarlo como activo
-                        if (userList[i].status == 3){
-                            userList[i].status = 1;
-                        }
-                        userList[i].last_active = time(NULL);
-                    }
-                }
                 break;
             }
             case 7:{

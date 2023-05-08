@@ -287,9 +287,11 @@ int main(int argc, char *argv[]) {
 
                 printf("Choose an option:\n");
                 printf("1. Active\n");
-                printf("2. Busy\n");
-                printf("3. Inactive\n");
+                printf("2. Inactive\n");
+                printf("3. Busy\n");
                 scanf(" %d", &option);
+
+                printf("%d", option);
 
                 ChatSistOS__Status user_status              = CHAT_SIST_OS__STATUS__INIT;
                 user_status.user_name                   = username;
